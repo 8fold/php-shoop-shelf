@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "8fold/php-markup",
-            "version": "0.1.3",
+            "version": "0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-markup.git",
-                "reference": "b481f0fff32e1e6154bb9c51ef608adc7a2f5d0d"
+                "reference": "24b39db1acce64459f24fa3a613c5a4c71ef8063"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-markup/zipball/b481f0fff32e1e6154bb9c51ef608adc7a2f5d0d",
-                "reference": "b481f0fff32e1e6154bb9c51ef608adc7a2f5d0d",
+                "url": "https://api.github.com/repos/8fold/php-markup/zipball/24b39db1acce64459f24fa3a613c5a4c71ef8063",
+                "reference": "24b39db1acce64459f24fa3a613c5a4c71ef8063",
                 "shasum": ""
             },
             "require": {
@@ -57,7 +57,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-06-11T23:44:29+00:00"
+            "time": "2020-06-16T19:03:44+00:00"
         },
         {
             "name": "8fold/php-shoop",

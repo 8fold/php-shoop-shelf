@@ -21,8 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Eightfold\\ShoopExtras\\": "./src/",
-            "Eightfold\\Markup\\": "./vendor/8fold/php-markup/src/"
+            "Eightfold\\ShoopExtras\\": "./src/"
         }
     },
     "autoload-dev": {
