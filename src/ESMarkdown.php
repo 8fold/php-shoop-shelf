@@ -4,6 +4,8 @@ namespace Eightfold\ShoopExtras;
 
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 
+use Eightfold\Markup\UIKit\Elements\Compound\Markdown;
+
 use Eightfold\Shoop\Helpers\Type;
 use Eightfold\Shoop\Interfaces\Shooped;
 use Eightfold\Shoop\Traits\ShoopedImp;
@@ -53,7 +55,7 @@ class ESMarkdown implements Shooped
     {
         $content = $this->content($markdownReplacements, $caseSensitive)
             ->unfold();
-        $html = UIKit::markdown($content)->unfold();
+        $html = Markdown::fold($content)->unfold();
         $html = Shoop::string($html)
             ->replace($htmlReplacements, $caseSensitive);
         if ($minified) {
