@@ -54,7 +54,7 @@ class ESMarkdown implements Shooped
         $content = $this->content($markdownReplacements, $caseSensitive)
             ->unfold();
         $cap = UIKit::p("Hello");
-        $html = UIKit::markdown($content)->unfold();
+        // $html = UIKit::markdown($content)->unfold();
         $html = Shoop::string($html)
             ->replace($htmlReplacements, $caseSensitive);
         if ($minified) {
