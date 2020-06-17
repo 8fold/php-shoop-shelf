@@ -54,4 +54,20 @@ class StoreTest extends TestCase
         $actual = ESStore::fold($path)->files;
         $this->assertSame($expected, $actual);
     }
+
+    public function testCanAddParts()
+    {
+        $base = __DIR__;
+        $expected = $base ."/data/inner-folder";
+        $actual = ESStore::fold($base)->plus("data", "inner-folder")->value();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testDropParts()
+    {
+        $base = __DIR__ ."/data/inner-folder";
+        $expected = __DIR__;
+        $actual = ESStore::fold($base)->dropLast(2)->value();
+        $this->assertSame($expected, $actual);
+    }
 }

@@ -21,6 +21,29 @@ class ESStore implements Shooped
         $this->value = Type::sanitizeType($path, ESString::class)->unfold();
     }
 
+    private function parts()
+    {
+        return Shoop::string($this->value())->divide("/");
+    }
+
+    public function plus(...$parts)
+    {
+        $path = $this->parts()->plus(...$parts)->join("/");
+        return Shoop::store($path);
+    }
+
+    public function dropLast($length = 1)
+    {
+        $path = $this->parts()->dropLast($length)->join("/");
+        return Shoop::store($path);
+    }
+
+    public function noEmpties()
+    {
+        $path = $this->parts()->noEmpties()->join("/");
+        return Shoop::string($path);
+    }
+
     public function markdown()
     {
         return ($this->isFile)
@@ -66,7 +89,8 @@ class ESStore implements Shooped
 
         } elseif (is_dir($path)) {
             return Shoop::array(scandir($path))->each(function($item) use ($path, $trim) {
-                return ($trim and ($item === "." or $item === ".." or $item === ".DS_Store"))
+                $bool = Shoop::array([".", "..", ".DS_Store"])->hasUnfolded($item);
+                return ($trim and $bool)
                     ? Shoop::string("")
                     : ESStore::fold($path ."/{$item}");
 
