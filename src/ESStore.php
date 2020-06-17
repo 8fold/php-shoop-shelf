@@ -7,6 +7,7 @@ use Eightfold\Shoop\Interfaces\Shooped;
 use Eightfold\Shoop\Traits\ShoopedImp;
 use Eightfold\Shoop\{
     ESString,
+    ESArray,
     ESBool
 };
 
@@ -19,6 +20,20 @@ class ESStore implements Shooped
     public function __construct($path)
     {
         $this->value = Type::sanitizeType($path, ESString::class)->unfold();
+    }
+
+    public function parent($length = 1)
+    {
+        return $this->dropLast()->isFolder(function($result, $path) {
+            return ($result)
+                ? Shoop::store($path)
+                : Shoop::store($path)->parent();
+        });
+    }
+
+    public function array(): ESArray
+    {
+        return Shoop::string($this->value())->divide("/")->noEmpties()->reindex();
     }
 
     private function parts()
