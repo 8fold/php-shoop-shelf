@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 use Eightfold\ShoopExtras\ESMarkdown;
 
+use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension;
+
 class MarkdownTest extends TestCase
 {
     public function testCanGetContent()
@@ -54,6 +56,18 @@ class MarkdownTest extends TestCase
 
         $expected = '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>';
         $actual = ESMarkdown::foldFromPath($path)->extensions()->html();
+        $this->assertSame($expected, $actual->unfold());
+
+        $path = __DIR__ ."/data/link.md";
+        $expected = '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>';
+        $actual = ESMarkdown::foldFromPath($path)->extensions()->html(
+            [], [], true, true, [
+                'html_input' => 'strip',
+                "external_link" => [
+                    "open_in_new_window" => true
+                ]
+            ]
+        );
         $this->assertSame($expected, $actual->unfold());
     }
 }
