@@ -4,7 +4,7 @@ namespace Eightfold\ShoopExtras;
 
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 
-use League\CommonMark\Converter;
+use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\DocParser;
 use League\CommonMark\Environment;
 use League\CommonMark\HtmlRenderer;
@@ -112,10 +112,7 @@ class ESMarkdown implements Shooped
             $environment->addExtension(new $extension());
         });
 
-        $parser = new DocParser($environment);
-        $renderer = new HtmlRenderer($environment);
-
-        $html = (new Converter($parser, $renderer))
+        $html = (new CommonMarkConverter($config, $environment))
             ->convertToHtml($content);
         $html = Shoop::string($html)
             ->replace($htmlReplacements, $caseSensitive);
