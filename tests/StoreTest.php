@@ -32,7 +32,10 @@ class StoreTest extends TestCase
     {
         $path = __DIR__ ."/data";
 
-        $expected = [__DIR__ ."/data/inner-folder"];
+        $expected = [
+            __DIR__ ."/data/inner-folder",
+            __DIR__ ."/data/table.md"
+        ];
         $actual = ESStore::fold($path)->content;
         $this->assertSame($expected, $actual);
 

@@ -44,4 +44,16 @@ class MarkdownTest extends TestCase
         ]);
         $this->assertEquals($expected, $actual->unfold());
     }
+
+    public function testExtensions()
+    {
+        $path = __DIR__ ."/data/table.md";
+        $expected = "<p>|THead ||:-----||TBody |</p>";
+        $actual = ESMarkdown::foldFromPath($path)->html();
+        $this->assertSame($expected, $actual->unfold());
+
+        $expected = '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>';
+        $actual = ESMarkdown::foldFromPath($path)->extensions()->html();
+        $this->assertSame($expected, $actual->unfold());
+    }
 }

@@ -8,7 +8,21 @@ use League\CommonMark\Converter;
 use League\CommonMark\DocParser;
 use League\CommonMark\Environment;
 use League\CommonMark\HtmlRenderer;
-use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\Extension\{
+    GithubFlavoredMarkdownExtension,
+    Autolink\AutolinkExtension,
+    DisallowedRawHtml\DisallowedRawHtmlExtension,
+    Strikethrough\StrikethroughExtension,
+    Table\TableExtension,
+    TaskList\TaskListExtension
+};
+
+use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkRenderer;
+use League\CommonMark\Extension\InlinesOnly\InlinesOnlyExtension;
+use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
+use League\CommonMark\Extension\SmartPunct\SmartPunctExtension;
 
 use Eightfold\Shoop\Helpers\Type;
 use Eightfold\Shoop\Interfaces\Shooped;
@@ -26,9 +40,38 @@ class ESMarkdown implements Shooped
 {
     use ShoopedImp;
 
-    public function __construct($content)
+    private $extensions = [];
+
+    static public function foldFromPath($path)
+    {
+        return Shoop::store($path)->isFile(function($result, $path) {
+            return ($result)
+                ? Shoop::store($path->unfold())->markdown()
+                : Shoop::markdown("");
+        });
+    }
+
+    public function __construct($content, ...$extensions)
     {
         $this->value = Type::sanitizeType($content, ESString::class)->unfold();
+        Shoop::array($extensions)->isNotEmpty(function($result, $extensions) {
+            if ($result->unfold()) {
+                $this->extensions(...$extensions);
+            }
+        });
+    }
+
+    public function extensions(...$extensions)
+    {
+        Shoop::array($extensions)->isNotEmpty(function($result, $extensions) {
+            $this->extensions = ($result->unfold())
+                ? $extensions->noEmpties()
+                : $extensions->plus(
+                    GithubFlavoredMarkdownExtension::class,
+                    ExternalLinkExtension::class
+                )->noEmpties();
+        });
+        return $this;
     }
 
     private function parsed()
@@ -64,8 +107,10 @@ class ESMarkdown implements Shooped
         $content = $this->content($markdownReplacements, $caseSensitive)
             ->unfold();
 
-        $environment = Environment::createCommonMarkEnvironment()
-            ->addExtension(new TableExtension());
+        $environment = Environment::createCommonMarkEnvironment();
+        Shoop::array($this->extensions)->each(function($extension) use ($environment) {
+            $environment->addExtension(new $extension());
+        });
 
         $parser = new DocParser($environment);
         $renderer = new HtmlRenderer($environment);
