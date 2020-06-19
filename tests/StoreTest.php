@@ -101,9 +101,10 @@ class StoreTest extends TestCase
 
     public function testCanUnfold()
     {
-        $expected = "/Users/alex/Public/Sites/php-shoop-extras/src/Routes/any.php";
+        $expected = Shoop::string(__DIR__)->divide("/")->dropLast()
+            ->plus("src", "Routes", "any.php")->join("/");
         $actual = Shoop::store(__DIR__)->dropLast()
             ->plus("src", "Routes", "any.php");
-        $this->assertSame($expected, $actual->unfold());
+        $this->assertSame($expected->unfold(), $actual->unfold());
     }
 }

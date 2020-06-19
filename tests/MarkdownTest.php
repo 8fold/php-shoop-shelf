@@ -76,11 +76,13 @@ class MarkdownTest extends TestCase
 
         $path = __DIR__ ."/data/link.md";
         $expected = '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>';
-        $actual = ESMarkdown::foldFromPath($path)->extensions(
+        $markdown = ESMarkdown::foldFromPath($path)->extensions(
             GithubFlavoredMarkdownExtension::class,
             ExternalLinkExtension::class,
             SmartPunctExtension::class
-        )->html(
+        );
+
+        $actual = $markdown->html(
             [], [], true, true, [
                 'html_input' => 'strip',
                 "external_link" => [
