@@ -4,7 +4,10 @@ namespace Eightfold\ShoopExtras\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-use Eightfold\ShoopExtras\ESStore;
+use Eightfold\ShoopExtras\{
+    Shoop,
+    ESStore
+};
 
 class StoreTest extends TestCase
 {
@@ -93,6 +96,14 @@ class StoreTest extends TestCase
         $base = __DIR__ ."/data/inner-folder/subfolder";
         $expected = __DIR__ ."/data/inner-folder";
         $actual = ESStore::fold($base)->parent();
+        $this->assertSame($expected, $actual->unfold());
+    }
+
+    public function testCanUnfold()
+    {
+        $expected = "/Users/alex/Public/Sites/php-shoop-extras/src/Routes/any.php";
+        $actual = Shoop::store(__DIR__)->dropLast()
+            ->plus("src", "Routes", "any.php");
         $this->assertSame($expected, $actual->unfold());
     }
 }

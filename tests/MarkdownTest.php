@@ -4,9 +4,25 @@ namespace Eightfold\ShoopExtras\Tests;
 
 use PHPUnit\Framework\TestCase;
 
+use Eightfold\ShoopExtras\Shoop;
+
 use Eightfold\ShoopExtras\ESMarkdown;
 
+use League\CommonMark\Extension\{
+    GithubFlavoredMarkdownExtension,
+    Autolink\AutolinkExtension,
+    DisallowedRawHtml\DisallowedRawHtmlExtension,
+    Strikethrough\StrikethroughExtension,
+    Table\TableExtension,
+    TaskList\TaskListExtension
+};
+
 use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkRenderer;
+use League\CommonMark\Extension\InlinesOnly\InlinesOnlyExtension;
+use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
+use League\CommonMark\Extension\SmartPunct\SmartPunctExtension;
 
 class MarkdownTest extends TestCase
 {
@@ -60,7 +76,21 @@ class MarkdownTest extends TestCase
 
         $path = __DIR__ ."/data/link.md";
         $expected = '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>';
-        $actual = ESMarkdown::foldFromPath($path)->extensions()->html(
+        $actual = ESMarkdown::foldFromPath($path)->extensions(
+            GithubFlavoredMarkdownExtension::class,
+            ExternalLinkExtension::class,
+            SmartPunctExtension::class
+        )->html(
+            [], [], true, true, [
+                'html_input' => 'strip',
+                "external_link" => [
+                    "open_in_new_window" => true
+                ]
+            ]
+        );
+        $this->assertSame($expected, $actual->unfold());
+
+        $actual = Shoop::store($path)->markdown()->extensions()->html(
             [], [], true, true, [
                 'html_input' => 'strip',
                 "external_link" => [
