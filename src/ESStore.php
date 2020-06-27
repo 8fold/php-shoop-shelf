@@ -75,7 +75,7 @@ class ESStore implements Shooped
                 return Shoop::this($bool);
             };
         }
-        return $closure($bool, Shoop::this($value));
+        return $closure($bool, Shoop::this($this));
     }
 
     public function isFile(\Closure $closure = null)
@@ -87,7 +87,7 @@ class ESStore implements Shooped
                 return Shoop::this($bool);
             };
         }
-        return $closure($bool, Shoop::this($value));
+        return $closure($bool, Shoop::this($this));
     }
 
     public function content($trim = true)
