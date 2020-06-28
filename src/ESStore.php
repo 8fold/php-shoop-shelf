@@ -33,7 +33,12 @@ class ESStore implements Shooped
 
     public function array(): ESArray
     {
-        return Shoop::string($this->value())->divide("/")->noEmpties()->reindex();
+        return $this->string()->divide("/")->noEmpties()->reindex();
+    }
+
+    public function string(): ESString
+    {
+        return Shoop::string($this->value());
     }
 
     private function parts()
