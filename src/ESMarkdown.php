@@ -31,8 +31,10 @@ use Eightfold\Shoop\ESString;
 
 use Eightfold\Markup\UIKit;
 
-use Eightfold\ShoopExtras\{
-    Shoop,
+use Eightfold\ShoopExtras\Shoop;
+
+use Eightfold\Shoop\{
+    ESArray,
     ESBool
 };
 
@@ -85,11 +87,17 @@ class ESMarkdown implements Shooped
         return Shoop::object($matter);
     }
 
-    public function content($markdownReplacements = [], $caseSensitive = true)
+    public function content($markdownReplacements = [], $caseSensitive = true, $trim = true)
     {
+        $markdownReplacements = Type::sanitizeType($markdownReplacements, ESArray::class)->unfold();
+        $caseSensitive = Type::sanitizeType($caseSensitive, ESBool::class)->unfold();
+        $trim = Type::sanitizeType($trim, ESBool::class)->unfold();
         $body = $this->parsed()->body();
         $replaced = Shoop::string($body)
             ->replace($markdownReplacements, $caseSensitive);
+        if ($trim) {
+            $replaced = $replaced->trim();
+        }
         return static::fold($replaced);
     }
 
