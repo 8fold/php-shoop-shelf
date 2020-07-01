@@ -48,19 +48,19 @@ class ESStore implements Shooped
 
     public function plus(...$parts)
     {
-        $path = $this->parts()->plus(...$parts)->join("/");
+        $path = $this->parts()->plus(...$parts)->join("/")->start("/");
         return Shoop::store($path);
     }
 
     public function dropLast($length = 1)
     {
-        $path = $this->parts()->dropLast($length)->join("/");
+        $path = $this->parts()->dropLast($length)->join("/")->start("/");
         return Shoop::store($path);
     }
 
     public function noEmpties()
     {
-        $path = $this->parts()->join("/");
+        $path = $this->parts()->join("/")->start("/");
         return Shoop::string($path);
     }
 
