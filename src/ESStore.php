@@ -38,12 +38,12 @@ class ESStore implements Shooped
 
     private function parts()
     {
-        return $this->string()->divide("/");
+        return $this->string()->divide("/", false)->reindex();
     }
 
     public function array(): ESArray
     {
-        return $this->parts()->noEmpties()->reindex();
+        return $this->parts();
     }
 
     public function plus(...$parts)
@@ -60,7 +60,7 @@ class ESStore implements Shooped
 
     public function noEmpties()
     {
-        $path = $this->parts()->noEmpties()->join("/");
+        $path = $this->parts()->join("/");
         return Shoop::string($path);
     }
 
