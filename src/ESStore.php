@@ -17,11 +17,6 @@ use Eightfold\ShoopExtras\Shoop;
 
 class ESStore extends ESPath
 {
-    public function __construct($path)
-    {
-        $this->value = Type::sanitizeType($path, ESString::class)->unfold();
-    }
-
     public function markdown()
     {
         return ($this->isFile)
