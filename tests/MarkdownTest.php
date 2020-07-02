@@ -49,11 +49,11 @@ class MarkdownTest extends TestCase
         $actual = ESMarkdown::fold($content)->meta;
         $this->assertEquals($expected, $actual);
 
-        $expected = "\nMarkdown content\n";
+        $expected = "Markdown text";
         $actual = ESMarkdown::fold($content)->content(["text" => "content"]);
         $this->assertEquals($expected, $actual->unfold());
 
-        $expected = "<i>Markdown content</i>";
+        $expected = "<i>Markdown text</i>";
         $actual = ESMarkdown::fold($content)->html([
             "text" => "content"
         ], [

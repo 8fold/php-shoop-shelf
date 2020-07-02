@@ -87,20 +87,14 @@ class ESMarkdown implements Shooped
         return Shoop::object($matter);
     }
 
-    public function body()
-    {
-        $body = $this->parsed()->body();
-        return Shoop::string($body);
-    }
-
     public function content($markdownReplacements = [], $caseSensitive = true, $trim = true)
     {
         $markdownReplacements = Type::sanitizeType($markdownReplacements, ESArray::class)->unfold();
         $caseSensitive = Type::sanitizeType($caseSensitive, ESBool::class)->unfold();
         $trim = Type::sanitizeType($trim, ESBool::class)->unfold();
-
-
-        $replaced = $this->body()->replace($markdownReplacements, $caseSensitive);
+        $body = $this->parsed()->body();
+        $replaced = Shoop::string($body)
+            ->replace($markdownReplacements, $caseSensitive);
         if ($trim) {
             $replaced = $replaced->trim();
         }
