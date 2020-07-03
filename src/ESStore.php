@@ -26,7 +26,11 @@ class ESStore extends ESPath
 
     public function metaMember($memberName)
     {
-        return $this->markdown()->meta()->{$memberName};
+        $value = $this->markdown()->meta()->{$memberName};
+        if ($value === null) {
+            return Shoop::string("");
+        }
+        return Shoop::this($value);
     }
 
     public function isFolder(\Closure $closure = null)
