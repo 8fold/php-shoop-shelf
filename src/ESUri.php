@@ -32,6 +32,16 @@ class ESUri extends ESPath
             ->divide($this->delimiter, false, 2)->last()->start($this->delimiter);
     }
 
+    public function tail()
+    {
+        return $this->value();
+    }
+
+    public function parts()
+    {
+        return $this->tail()->divide($this->delimiter, false)->reindex();
+    }
+
     private function raw()
     {
         return $this->raw;
@@ -54,10 +64,5 @@ class ESUri extends ESPath
         return Shoop::string($this->raw())
             ->divide($this->protocolDelimiter, false, 2)->last()
             ->divide($this->delimiter, false, 2)->first();
-    }
-
-    public function tail()
-    {
-        return $this->value();
     }
 }
