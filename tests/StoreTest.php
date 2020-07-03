@@ -50,7 +50,8 @@ class StoreTest extends TestCase
         $this->assertSame($expected, $actual);
 
         $expected = [
-            __DIR__ ."/data/inner-folder/content.md"
+            __DIR__ ."/data/inner-folder/content.md",
+            __DIR__ ."/data/inner-folder/file.extension"
         ];
         $actual = ESStore::fold($path)->plus("inner-folder")->files;
         $this->assertSame($expected, $actual);
@@ -87,6 +88,14 @@ class StoreTest extends TestCase
         $path = __DIR__ ."/data/inner-folder";
         $expected = [__DIR__ ."/data/inner-folder/file.extension"];
         $actual = ESStore::fold($path)->files("extension");
+        $this->assertSame($expected, $actual->unfold());
+    }
+
+    public function testCanGetMetaMember()
+    {
+        $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
+        $expected = "Something";
+        $actual = ESStore::fold($path)->metaMember("title");
         $this->assertSame($expected, $actual->unfold());
     }
 
