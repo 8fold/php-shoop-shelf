@@ -29,7 +29,8 @@ class ESUri extends ESPath
     {
         return Shoop::string($this->raw())
             ->divide($this->protocolDelimiter, false, 2)->last()
-            ->divide($this->delimiter, false, 2)->last()->start($this->delimiter);
+            ->divide($this->delimiter, false, 2)
+            ->last()->start($this->delimiter);
     }
 
     public function tail()
