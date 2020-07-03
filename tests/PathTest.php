@@ -46,6 +46,10 @@ class PathTest extends TestCase
         $expected = ["root", "data", "inner-folder"];
         $actual = ESPath::fold($base)->array();
         $this->assertEquals($expected, $actual->unfold());
+
+        $expected = ["root", "data", "inner-folder"];
+        $actual = ESPath::fold($base)->parts();
+        $this->assertEquals($expected, $actual->unfold());
     }
 
     public function testParent()
