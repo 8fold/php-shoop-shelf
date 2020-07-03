@@ -64,8 +64,8 @@ class ESStore extends ESPath
             return Shoop::array(scandir($path))->each(function($item) use ($path, $trim) {
                 $bool = Shoop::array([".", "..", ".DS_Store"])->hasUnfolded($item);
                 return ($trim and $bool)
-                    ? Shoop::store("")
-                    : Shoop::store($path ."/{$item}");
+                    ? Shoop::string("")
+                    : Shoop::string($path ."/{$item}");
 
             })->noEmpties()->reindex();
 
