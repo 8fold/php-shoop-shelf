@@ -17,26 +17,47 @@ use Eightfold\ShoopExtras\Shoop;
 
 class ESUri extends ESPath
 {
+    private $raw = "";
     private $protocolDelimiter = "://";
-    private $domain = "";
+
+    public function __construct($path)
+    {
+        $this->raw = $path;
+    }
+
+    public function value()
+    {
+        return Shoop::string($this->raw())
+            ->divide($this->protocolDelimiter, false, 2)->last()
+            ->divide($this->delimiter, false, 2)->last()->start($this->delimiter);
+    }
+
+    private function raw()
+    {
+        return $this->raw;
+    }
+
+    public function protocolDelimiter($delimiter = "://")
+    {
+        $this->protocolDelimiter = $delimiter;
+        return $this;
+    }
 
     public function protocol()
     {
-        return Shoop::string($this->value())
+        return Shoop::string($this->raw())
             ->divide($this->protocolDelimiter, false, 2)->first();
     }
 
     public function domain()
     {
-        return Shoop::string($this->value())
+        return Shoop::string($this->raw())
             ->divide($this->protocolDelimiter, false, 2)->last()
             ->divide($this->delimiter, false, 2)->first();
     }
 
     public function tail()
     {
-        return Shoop::string($this->value())
-            ->divide($this->protocolDelimiter, false, 2)->last()
-            ->divide($this->delimiter, false, 2)->last()->start($this->delimiter);
+        return $this->value();
     }
 }

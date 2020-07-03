@@ -44,9 +44,9 @@ class ESPath implements Shooped
         return Shoop::string($this->value());
     }
 
-    private function parts()
+    public function parts()
     {
-        return $this->string()->divide("/", false)->reindex();
+        return $this->string()->divide($this->delimiter, false)->reindex();
     }
 
     public function array(): ESArray
