@@ -77,23 +77,34 @@ class ESStore extends ESPath
     {
         return ($this->isFile)
             ? Shoop::array([])
-            : $this->content()->each(function($path) {
+            : $this->content()->each(function($path) use ($endsWith) {
                 $store = Shoop::store($path);
-                return ($store->isFile)
-                    ? Shoop::string("")
-                    : $store;
+                return ($store->isFolder)
+                    ? $store
+                    : Shoop::string("");
             })->noEmpties()->reindex();
     }
 
-    public function files()
+    public function files($endsWith = "*")
     {
         return ($this->isFile)
             ? Shoop::array([])
-            : $this->content()->each(function($path) {
+            : $this->content()->each(function($path) use ($endsWith) {
                 $store = Shoop::store($path);
-                return ($store->isFolder)
-                    ? Shoop::string("")
-                    : $store;
+                return $store->isFile(function($result, $store) use ($endsWith) {
+                    // TODO: One would think this could be simplified unless check is paramount
+                    if (! $result) {
+                        return Shoop::string("");
+
+                    } elseif (Shoop::string($endsWith)->isUnfolded("*")) {
+                        return $store;
+
+                    } elseif ($store->string()->endsWithUnfolded($endsWith)) {
+                        return $store;
+
+                    }
+                    return Shoop::string("");
+                });
         })->noEmpties()->reindex();
     }
 }
