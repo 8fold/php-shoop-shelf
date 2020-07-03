@@ -64,8 +64,8 @@ class ESStore extends ESPath
             return Shoop::array(scandir($path))->each(function($item) use ($path, $trim) {
                 $bool = Shoop::array([".", "..", ".DS_Store"])->hasUnfolded($item);
                 return ($trim and $bool)
-                    ? Shoop::string("")
-                    : ESStore::fold($path ."/{$item}");
+                    ? Shoop::store("")
+                    : Shoop::store($path ."/{$item}");
 
             })->noEmpties()->reindex();
 
@@ -78,9 +78,11 @@ class ESStore extends ESPath
         return ($this->isFile)
             ? Shoop::array([])
             : $this->content()->each(function($path) {
-            $path = ESStore::fold($path);
-            return ($path->isFile) ? Shoop::string("") : $path;
-        })->noEmpties()->reindex();
+                $store = Shoop::store($path);
+                return ($store->isFile)
+                    ? Shoop::string("")
+                    : $store;
+            })->noEmpties()->reindex();
     }
 
     public function files()
@@ -88,8 +90,10 @@ class ESStore extends ESPath
         return ($this->isFile)
             ? Shoop::array([])
             : $this->content()->each(function($path) {
-            $path = ESStore::fold($path);
-            return ($path->isFolder) ? Shoop::string("") : $path;
+                $store = Shoop::store($path);
+                return ($store->isFolder)
+                    ? Shoop::string("")
+                    : $store;
         })->noEmpties()->reindex();
     }
 }

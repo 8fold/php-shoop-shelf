@@ -56,12 +56,12 @@ class PathTest extends TestCase
     {
         $base = __DIR__ ."/data/inner-folder/subfolder/inner.md";
         $expected = __DIR__ ."/data/inner-folder/subfolder";
-        $actual = ESPath::fold($base)->parent();
+        $actual = ESPath::fold($base)->dropLast();
         $this->assertSame($expected, $actual->unfold());
 
         $base = __DIR__ ."/data/inner-folder/subfolder";
         $expected = __DIR__ ."/data/inner-folder";
-        $actual = ESPath::fold($base)->parent();
+        $actual = ESPath::fold($base)->dropLast();
         $this->assertSame($expected, $actual->unfold());
     }
 
