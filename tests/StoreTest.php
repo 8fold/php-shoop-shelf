@@ -37,6 +37,7 @@ class StoreTest extends TestCase
 
         $expected = [
             __DIR__ ."/data/inner-folder/content.md",
+            __DIR__ ."/data/inner-folder/file.extension",
             __DIR__ ."/data/inner-folder/subfolder"
         ];
         $actual = ESStore::fold($path)->plus("inner-folder")->content();
@@ -76,9 +77,17 @@ class StoreTest extends TestCase
         $this->assertSame($expected, $actual);
 
         $path = __DIR__ ."/data/inner-folder";
-        $expected = [__DIR__ ."/data/inner-folder/content.md"];
+        $expected = [
+            __DIR__ ."/data/inner-folder/content.md",
+            __DIR__ ."/data/inner-folder/file.extension"
+        ];
         $actual = ESStore::fold($path)->files;
         $this->assertSame($expected, $actual);
+
+        $path = __DIR__ ."/data/inner-folder";
+        $expected = [__DIR__ ."/data/inner-folder/file.extension"];
+        $actual = ESStore::fold($path)->files("extension");
+        $this->assertSame($expected, $actual->unfold());
     }
 
     public function testCanUnfold()
