@@ -35,7 +35,8 @@ use Eightfold\ShoopExtras\Shoop;
 
 use Eightfold\Shoop\{
     ESArray,
-    ESBool
+    ESBool,
+    ESDictionary
 };
 
 class ESMarkdown implements Shooped
@@ -89,12 +90,15 @@ class ESMarkdown implements Shooped
 
     public function content($markdownReplacements = [], $caseSensitive = true, $trim = true)
     {
-        $markdownReplacements = Type::sanitizeType($markdownReplacements, ESArray::class)->unfold();
+        $markdownReplacements = Type::sanitizeType($markdownReplacements, ESDictionary::class)->unfold();
         $caseSensitive = Type::sanitizeType($caseSensitive, ESBool::class)->unfold();
         $trim = Type::sanitizeType($trim, ESBool::class)->unfold();
+
         $body = $this->parsed()->body();
+
         $replaced = Shoop::string($body)
             ->replace($markdownReplacements, $caseSensitive);
+
         if ($trim) {
             $replaced = $replaced->trim();
         }
