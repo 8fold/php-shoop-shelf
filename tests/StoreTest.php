@@ -96,7 +96,11 @@ class StoreTest extends TestCase
         $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
         $expected = "Something";
         $actual = ESStore::fold($path)->metaMember("title");
-        $this->assertSame($expected, $actual->unfold());
+        $this->assertSame($expected, $actual);
+
+        $expected = null;
+        $actual = ESStore::fold($path)->metaMember("heading");
+        $this->assertNull($actual);
     }
 
     public function testCanUnfold()
