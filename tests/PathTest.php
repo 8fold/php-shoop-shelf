@@ -11,7 +11,7 @@ use Eightfold\ShoopExtras\{
 
 class PathTest extends TestCase
 {
-    public function testCanCheckPathIsFileOrFolder()
+    public function testPathValues()
     {
         $path = __DIR__ ."/data/inner-folder";
         $actual = new ESPath($path);

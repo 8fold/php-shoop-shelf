@@ -26,5 +26,11 @@ class UriTest extends TestCase
 
         $actual = Shoop::uri($path)->tail;
         $this->assertEquals("/data/inner-folder", $actual);
+
+        $path = "/data/inner-folder";
+        $expected = 2;
+        $actual = Shoop::uri($path)->parts()->count();
+
+        $this->assertEquals($expected, $actual->unfold());
     }
 }
