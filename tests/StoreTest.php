@@ -97,6 +97,10 @@ class StoreTest extends TestCase
         $expected = "Something";
         $actual = ESStore::fold($path)->metaMember("title");
         $this->assertSame($expected, $actual->unfold());
+
+        $expected = "";
+        $actual = ESStore::fold($path)->metaMember("heading");
+        $this->assertEquals($expected, $actual->unfold());
     }
 
     public function testCanUnfold()
