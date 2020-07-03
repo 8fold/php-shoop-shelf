@@ -30,15 +30,6 @@ class ESPath implements Shooped
         return $this;
     }
 
-    public function parent($length = 1)
-    {
-        return $this->dropLast()->isFolder(function($result, $path) {
-            return ($result)
-                ? Shoop::store($path)
-                : Shoop::store($path)->parent();
-        });
-    }
-
     public function string(): ESString
     {
         return Shoop::string($this->value());
@@ -57,18 +48,18 @@ class ESPath implements Shooped
     public function plus(...$parts)
     {
         $path = $this->parts()->plus(...$parts)->join("/")->start("/");
-        return Shoop::store($path);
+        return static::fold($path);
     }
 
     public function dropLast($length = 1)
     {
         $path = $this->parts()->dropLast($length)->join("/")->start("/");
-        return Shoop::store($path);
+        return static::fold($path);
     }
 
     public function noEmpties()
     {
         $path = $this->parts()->join("/")->start("/");
-        return Shoop::string($path);
+        return satic::fold($path);
     }
 }
