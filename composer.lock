@@ -8,24 +8,23 @@
     "packages": [
         {
             "name": "8fold/php-shoop",
-            "version": "0.4.9",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-shoop.git",
-                "reference": "a489f65413610d03a3ec1cd5d60ffb881f990f48"
+                "reference": "ca611bfc549732c83311e5b7af0894c18af4fec5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/a489f65413610d03a3ec1cd5d60ffb881f990f48",
-                "reference": "a489f65413610d03a3ec1cd5d60ffb881f990f48",
+                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/ca611bfc549732c83311e5b7af0894c18af4fec5",
+                "reference": "ca611bfc549732c83311e5b7af0894c18af4fec5",
                 "shasum": ""
             },
             "require": {
-                "php": "7.*"
+                "php": "~7"
             },
             "require-dev": {
-                "phpunit/php-code-coverage": "8.0.*",
-                "phpunit/phpunit": "9.1.*"
+                "phpunit/phpunit": "~9.1"
             },
             "type": "library",
             "autoload": {
@@ -43,7 +42,7 @@
                     "email": "josh@8fold.pro"
                 }
             ],
-            "description": "A wrapper to create a more ubiquitous API for interacting with PHP Primitives.",
+            "description": "A wrapper to create a more ubiquitous API for interacting with primitive data types.",
             "funding": [
                 {
                     "url": "https://github.com/8fold",
@@ -54,7 +53,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-07-03T01:12:56+00:00"
+            "time": "2020-07-05T23:11:20+00:00"
         },
         {
             "name": "league/commonmark",
@@ -1936,16 +1935,16 @@
         },
         {
             "name": "sebastian/type",
-            "version": "2.1.1",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/type.git",
-                "reference": "56b3ba194e0cbaaf3de7ccd353c289d7a84ed022"
+                "reference": "86991e2b33446cd96e648c18bcdb1e95afb2c05a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/type/zipball/56b3ba194e0cbaaf3de7ccd353c289d7a84ed022",
-                "reference": "56b3ba194e0cbaaf3de7ccd353c289d7a84ed022",
+                "url": "https://api.github.com/repos/sebastianbergmann/type/zipball/86991e2b33446cd96e648c18bcdb1e95afb2c05a",
+                "reference": "86991e2b33446cd96e648c18bcdb1e95afb2c05a",
                 "shasum": ""
             },
             "require": {
@@ -1957,7 +1956,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1-dev"
+                    "dev-master": "2.2-dev"
                 }
             },
             "autoload": {
@@ -1984,7 +1983,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-06-26T12:17:54+00:00"
+            "time": "2020-07-05T08:31:53+00:00"
         },
         {
             "name": "sebastian/version",
