@@ -37,27 +37,20 @@ class ESStore extends ESPath
     {
         $value = $this->value();
         $bool = is_dir($value);
-        if ($closure === null) {
-            $closure = function($bool) {
-                return Shoop::this($bool);
-            };
-        }
-        return $closure(Shoop::bool($bool), Shoop::this($this));
+        return $this->condition($bool, $closure);
     }
 
     public function isFile(\Closure $closure = null)
     {
         $value = $this->value();
         $bool = is_file($value);
-        if ($closure === null) {
-            $closure = function($bool) {
-                return Shoop::this($bool);
-            };
-        }
-        return $closure(Shoop::bool($bool), Shoop::this($this));
+        return $this->condition($bool, $closure);
     }
 
-    public function content($trim = true)
+    public function content(
+        $trim = true,
+        $ignore = [".", "..", ".DS_Store", ".gitignore"]
+    )
     {
         $trim = Type::sanitizeType($trim, ESBool::class)->unfold();
         $path = $this->value();
@@ -70,11 +63,12 @@ class ESStore extends ESPath
             }
 
         } elseif (is_dir($path)) {
-            return Shoop::array(scandir($path))->each(function($item) use ($path, $trim) {
-                $bool = Shoop::array([".", "..", ".DS_Store", ".gitignore"])->hasUnfolded($item);
-                return ($trim and $bool)
-                    ? Shoop::string("")
-                    : Shoop::string($path ."/{$item}");
+            return Shoop::array(scandir($path))->each(
+                function($item) use ($path, $trim, $ignore) {
+                    $bool = Shoop::array($ignore)->hasUnfolded($item);
+                    return ($trim and $bool)
+                        ? Shoop::string("")
+                        : Shoop::string($path ."/{$item}");
 
             })->noEmpties()->reindex();
 
