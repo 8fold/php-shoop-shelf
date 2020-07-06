@@ -49,7 +49,7 @@ class ESStore extends ESPath
 
     public function content(
         $trim = true,
-        $ignore = [".", "..", ".DS_Store", ".gitignore"]
+        $ignore = [".", "..", ".DS_Store"]
     )
     {
         $trim = Type::sanitizeType($trim, ESBool::class)->unfold();
