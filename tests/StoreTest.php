@@ -26,8 +26,19 @@ class StoreTest extends TestCase
         $actual = ESStore::fold($path)->isFolder;
         $this->assertTrue($actual);
 
+        $actual = ESStore::fold($path)->isFolder(function($result) {
+            return $result->unfold();
+        });
+        $this->assertTrue($actual);
+
         $path = $path ."/content.md";
         $actual = ESStore::fold($path)->isFile;
+        $this->assertTrue($actual);
+
+        $actual = ESStore::fold($path)->isFile(function($result, $p) use ($path) {
+            $this->assertEquals($path, $p);
+            return $result->unfold();
+        });
         $this->assertTrue($actual);
     }
 

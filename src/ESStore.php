@@ -42,7 +42,7 @@ class ESStore extends ESPath
                 return Shoop::this($bool);
             };
         }
-        return $closure($bool, Shoop::this($this));
+        return $closure(Shoop::bool($bool), Shoop::this($this));
     }
 
     public function isFile(\Closure $closure = null)
@@ -54,7 +54,7 @@ class ESStore extends ESPath
                 return Shoop::this($bool);
             };
         }
-        return $closure($bool, Shoop::this($this));
+        return $closure(Shoop::bool($bool), Shoop::this($this));
     }
 
     public function content($trim = true)
@@ -102,7 +102,7 @@ class ESStore extends ESPath
                 $store = Shoop::store($path);
                 return $store->isFile(function($result, $store) use ($endsWith) {
                     // TODO: One would think this could be simplified unless check is paramount
-                    if (! $result) {
+                    if (! $result->unfold()) {
                         return Shoop::string("");
 
                     } elseif (Shoop::string($endsWith)->isUnfolded("*")) {
