@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6406bf5e3c95b4367e4cc9c1095821e3",
+    "content-hash": "a3cef7556f0a79cb377c5ea55fac4de0",
     "packages": [
         {
             "name": "8fold/php-shoop",
-            "version": "0.5.0",
+            "version": "0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-shoop.git",
-                "reference": "ca611bfc549732c83311e5b7af0894c18af4fec5"
+                "reference": "b580b494d88d296a8f10d65c66c26ec0ac50cc80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/ca611bfc549732c83311e5b7af0894c18af4fec5",
-                "reference": "ca611bfc549732c83311e5b7af0894c18af4fec5",
+                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/b580b494d88d296a8f10d65c66c26ec0ac50cc80",
+                "reference": "b580b494d88d296a8f10d65c66c26ec0ac50cc80",
                 "shasum": ""
             },
             "require": {
@@ -53,7 +53,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-07-05T23:11:20+00:00"
+            "time": "2020-07-07T02:41:28+00:00"
         },
         {
             "name": "league/commonmark",
@@ -201,16 +201,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v2.1.2",
+            "version": "v2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337"
+                "reference": "5e20b83385a77593259c9f8beb2c43cd03b2ac14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337",
-                "reference": "dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/5e20b83385a77593259c9f8beb2c43cd03b2ac14",
+                "reference": "5e20b83385a77593259c9f8beb2c43cd03b2ac14",
                 "shasum": ""
             },
             "require": {
@@ -220,6 +220,10 @@
             "extra": {
                 "branch-alias": {
                     "dev-master": "2.1-dev"
+                },
+                "thanks": {
+                    "name": "symfony/contracts",
+                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -257,7 +261,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-05-27T08:34:37+00:00"
+            "time": "2020-06-06T08:49:21+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",

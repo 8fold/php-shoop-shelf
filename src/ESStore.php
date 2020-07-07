@@ -17,11 +17,11 @@ use Eightfold\ShoopExtras\Shoop;
 
 class ESStore extends ESPath
 {
-    public function markdown()
+    public function markdown(...$extensions)
     {
         return ($this->isFile)
-            ? Shoop::markdown($this->content)
-            : Shoop::markdown("");
+            ? Shoop::markdown($this->content, ...$extensions)
+            : Shoop::markdown("", ...$extensions);
     }
 
     public function metaMember($memberName)
@@ -40,10 +40,22 @@ class ESStore extends ESPath
         return $this->condition($bool, $closure);
     }
 
+    public function isNotFolder(\Closure $closure = null)
+    {
+        $bool = $this->isFolder()->toggle;
+        return $this->condition($bool, $closure);
+    }
+
     public function isFile(\Closure $closure = null)
     {
         $value = $this->value();
         $bool = is_file($value);
+        return $this->condition($bool, $closure);
+    }
+
+    public function isNotFile(\Closure $closure = null)
+    {
+        $bool = $this->isFile()->toggle;
         return $this->condition($bool, $closure);
     }
 

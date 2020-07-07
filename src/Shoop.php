@@ -13,9 +13,9 @@ use Eightfold\ShoopExtras\{
 
 class Shoop extends EFShoop
 {
-    static public function markdown($content): ESMarkdown
+    static public function markdown($content, ...$extensions): ESMarkdown
     {
-        return ESMarkdown::fold($content);
+        return ESMarkdown::fold($content, ...$extensions);
     }
 
     static public function store($path): ESStore

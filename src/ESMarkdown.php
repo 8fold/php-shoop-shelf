@@ -45,13 +45,14 @@ class ESMarkdown implements Shooped
 
     private $extensions = [];
 
-    static public function foldFromPath($path)
+    static public function foldFromPath($path, ...$extensions)
     {
-        return Shoop::store($path)->isFile(function($result, $path) {
-            return ($result)
-                ? Shoop::store($path->unfold())->markdown()
-                : Shoop::markdown("");
-        });
+        return Shoop::store($path)->isNotFile(
+            function($result, $path) use ($extensions) {
+                return ($result->unfold())
+                    ? Shoop::markdown("", ...$extensions)
+                    : Shoop::store($path->unfold())->markdown(...$extensions);
+            });
     }
 
     public function __construct($content, ...$extensions)
