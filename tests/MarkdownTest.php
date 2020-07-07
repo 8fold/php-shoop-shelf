@@ -62,33 +62,20 @@ class MarkdownTest extends TestCase
     public function testExtensions()
     {
         $path = __DIR__ ."/data/table.md";
+
         $expected = "<p>|THead ||:-----||TBody |</p>";
         $actual = ESMarkdown::foldFromPath($path)->html();
         $this->assertSame($expected, $actual->unfold());
 
         $expected = '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>';
-        $actual = ESMarkdown::foldFromPath($path)->extensions()->html();
+        $actual = ESMarkdown::foldFromPath($path, TableExtension::class)->html();
         $this->assertSame($expected, $actual->unfold());
 
         $path = __DIR__ ."/data/link.md";
         $expected = '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>';
-        $markdown = ESMarkdown::foldFromPath($path)->extensions(
-            GithubFlavoredMarkdownExtension::class,
-            ExternalLinkExtension::class,
-            SmartPunctExtension::class
-        );
-
-        $actual = $markdown->html(
-            [], [], true, true, [
-                'html_input' => 'strip',
-                "external_link" => [
-                    "open_in_new_window" => true
-                ]
-            ]
-        );
-        $this->assertSame($expected, $actual->unfold());
-
-        $actual = Shoop::store($path)->markdown()->extensions()->html(
+        $actual = ESMarkdown::foldFromPath($path)->extensions(
+            ExternalLinkExtension::class
+        )->html(
             [], [], true, true, [
                 'html_input' => 'strip',
                 "external_link" => [
