@@ -57,23 +57,12 @@ class ESMarkdown implements Shooped
     public function __construct($content, ...$extensions)
     {
         $this->value = Type::sanitizeType($content, ESString::class)->unfold();
-        Shoop::array($extensions)->isNotEmpty(function($result, $extensions) {
-            if ($result->unfold()) {
-                $this->extensions(...$extensions);
-            }
-        });
+        $this->extensions = $extensions;
     }
 
     public function extensions(...$extensions)
     {
-        Shoop::array($extensions)->isNotEmpty(function($result, $extensions) {
-            $this->extensions = ($result->unfold())
-                ? $extensions->noEmpties()
-                : $extensions->plus(
-                    GithubFlavoredMarkdownExtension::class,
-                    ExternalLinkExtension::class
-                )->noEmpties();
-        });
+        $this->extensions = $extensions;
         return $this;
     }
 
