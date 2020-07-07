@@ -2,6 +2,8 @@
 
 namespace Eightfold\ShoopExtras;
 
+use \Closure;
+
 use Eightfold\ShoopExtras\ESPath;
 
 use Eightfold\Shoop\Helpers\Type;
@@ -33,27 +35,40 @@ class ESStore extends ESPath
         return Shoop::this($value);
     }
 
-    public function isFolder(\Closure $closure = null)
+    // TODO: Use the one from ShoopedImp somehow
+    public function condition($bool, Closure $closure = null)
+    {
+        $bool = Type::sanitizeType($bool, ESBool::class);
+        $value = $this->value();
+        if ($closure === null) {
+            $closure = function($bool, $value) {
+                return $bool;
+            };
+        }
+        return $closure($bool, Shoop::store($value));
+    }
+
+    public function isFolder(Closure $closure = null)
     {
         $value = $this->value();
         $bool = is_dir($value);
         return $this->condition($bool, $closure);
     }
 
-    public function isNotFolder(\Closure $closure = null)
+    public function isNotFolder(Closure $closure = null)
     {
         $bool = $this->isFolder()->toggle;
         return $this->condition($bool, $closure);
     }
 
-    public function isFile(\Closure $closure = null)
+    public function isFile(Closure $closure = null)
     {
         $value = $this->value();
         $bool = is_file($value);
         return $this->condition($bool, $closure);
     }
 
-    public function isNotFile(\Closure $closure = null)
+    public function isNotFile(Closure $closure = null)
     {
         $bool = $this->isFile()->toggle;
         return $this->condition($bool, $closure);
