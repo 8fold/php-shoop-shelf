@@ -35,8 +35,8 @@ class StoreTest extends TestCase
         $actual = ESStore::fold($path)->isFile;
         $this->assertTrue($actual);
 
-        $actual = ESStore::fold($path)->isFile(function($result, $p) use ($path) {
-            $this->assertEquals($path, $p);
+        $actual = ESStore::fold($path)->isFile(function($result, $p) {
+            $this->assertTrue(is_a($p, ESStore::class));
             return $result->unfold();
         });
         $this->assertTrue($actual);
