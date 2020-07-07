@@ -74,12 +74,11 @@ class ESStore extends ESPath
         return $this->condition($bool, $closure);
     }
 
-    public function content(
-        $trim = true,
-        $ignore = [".", "..", ".DS_Store"]
-    )
+    public function content($trim = true, $ignore = [".", "..", ".DS_Store"])
     {
-        $trim = Type::sanitizeType($trim, ESBool::class)->unfold();
+        $trim = Type::sanitizeType($trim, ESBool::class);
+        $ignore = Type::sanitizeType($ignore, ESArray::class);
+
         $path = $this->value();
         if (file_exists($path) and is_file($path)) {
             $contents = file_get_contents($path);
@@ -115,11 +114,14 @@ class ESStore extends ESPath
             })->noEmpties()->reindex();
     }
 
-    public function files($endsWith = "*")
+    public function files($trim = true, $ignore = [".", "..", ".DS_Store"], $endsWith = "*")
     {
+        $trim = Type::sanitizeType($trim, ESBool::class);
+        $ignore = Type::sanitizeType($ignore, ESArray::class);
+        $endsWith = Type::sanitizeType($endsWith, ESString::class);
         return ($this->isFile)
             ? Shoop::array([])
-            : $this->content()->each(function($path) use ($endsWith) {
+            : $this->content(true, $ignore)->each(function($path) use ($ignore, $endsWith) {
                 $store = Shoop::store($path);
                 return $store->isFile(function($result, $store) use ($endsWith) {
                     // TODO: One would think this could be simplified unless check is paramount
