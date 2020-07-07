@@ -98,7 +98,7 @@ class StoreTest extends TestCase
 
         $path = __DIR__ ."/data/inner-folder";
         $expected = [__DIR__ ."/data/inner-folder/file.extension"];
-        $actual = ESStore::fold($path)->files("extension");
+        $actual = ESStore::fold($path)->files(true, [], "extension");
         $this->assertSame($expected, $actual->unfold());
     }
 
