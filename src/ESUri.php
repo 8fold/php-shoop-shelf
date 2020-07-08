@@ -30,7 +30,11 @@ class ESUri extends ESPath
         return Shoop::string($this->raw())
             ->divide($this->protocolDelimiter, false, 2)->last()
             ->divide($this->delimiter, false, 2)
-            ->last()->start($this->delimiter);
+            ->countIsGreaterThan(1, function($result, $path) {
+                return ($result->unfold() or $this->protocol()->isEmpty)
+                    ? $path->last()->start("/")
+                    : Shoop::string("/");
+            });
     }
 
     public function tail()
@@ -57,7 +61,12 @@ class ESUri extends ESPath
     public function protocol()
     {
         return Shoop::string($this->raw())
-            ->divide($this->protocolDelimiter, false, 2)->first();
+            ->divide($this->protocolDelimiter, false, 2)
+            ->countIsGreaterThan(1, function($result, $array) {
+                return ($result->unfold())
+                    ? $array->first()
+                    : Shoop::string("");
+            });
     }
 
     public function domain()
@@ -65,5 +74,10 @@ class ESUri extends ESPath
         return Shoop::string($this->raw())
             ->divide($this->protocolDelimiter, false, 2)->last()
             ->divide($this->delimiter, false, 2)->first();
+    }
+
+    public function unfold()
+    {
+        return $this->value();
     }
 }

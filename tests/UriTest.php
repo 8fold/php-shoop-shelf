@@ -40,4 +40,43 @@ class UriTest extends TestCase
         $actual = Shoop::uri($path)->parts()->count();
         $this->assertEquals($expected, $actual->unfold());
     }
+
+    public function testCanHandleRoot()
+    {
+        // "http://localhost" - root
+        $path = "http://localhost";
+        $expected = "/";
+        $actual = Shoop::uri($path);
+        $this->assertEquals($expected, $actual->unfold());
+
+        // "http://localhost/" - root
+        $path = "http://localhost/";
+        $expected = "/";
+        $actual = Shoop::uri($path);
+        $this->assertEquals($expected, $actual->unfold());
+
+        // "http://localhost/sub"
+        $path = "http://localhost/sub";
+        $expected = "/sub";
+        $actual = Shoop::uri($path);
+        $this->assertEquals($expected, $actual->unfold());
+
+        // "http://localhost/sub/sub"
+        $path = "http://localhost/sub/sub";
+        $expected = "/sub/sub";
+        $actual = Shoop::uri($path);
+        $this->assertEquals($expected, $actual->unfold());
+
+        // "/" - root
+        $path = "/";
+        $expected = "/";
+        $actual = Shoop::uri($path);
+        $this->assertEquals($expected, $actual->unfold());
+
+        // "/sub"
+        $path = "/sub";
+        $expected = "/sub";
+        $actual = Shoop::uri($path);
+        $this->assertEquals($expected, $actual->unfold());
+    }
 }
