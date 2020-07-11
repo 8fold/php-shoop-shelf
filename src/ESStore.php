@@ -48,6 +48,13 @@ class ESStore extends ESPath
         return $closure($bool, Shoop::store($value));
     }
 
+    public function endsWith($needle, Closure $closure = null)
+    {
+        $needle = Type::sanitizeType($needle, ESString::class);
+        $bool = Shoop::string($this->value())->endsWith($needle);
+        return $this->condition($bool, $closure);
+    }
+
     public function isFolder(Closure $closure = null)
     {
         $value = $this->value();
