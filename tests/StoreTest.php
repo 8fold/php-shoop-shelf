@@ -125,7 +125,7 @@ class StoreTest extends TestCase
 
     public function testParent()
     {
-        $expected = Shoop::string(__DIR__)->divide("/")->dropLast();
+        $expected = Shoop::string(__DIR__)->divide("/")->dropLast()->join("/");
         $actual = Shoop::store(__DIR__)->dropLast();
         $this->assertTrue(is_a($actual, ESStore::class));
 
@@ -133,7 +133,7 @@ class StoreTest extends TestCase
         $this->assertTrue(is_a($actual, ESStore::class));
 
         $actual = $actual->dropLast(3);
-        $this->assertSame($expected, $actual->unfold());
+        $this->assertSame($expected->unfold(), $actual->unfold());
     }
 
     public function testCanCheckEndsWith()
