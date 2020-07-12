@@ -77,6 +77,12 @@ class ESMarkdown implements Shooped
         return YamlFrontMatter::parse($this->value());
     }
 
+    public function body()
+    {
+        $body = $this->parsed()->body();
+        return Shoop::string($body);
+    }
+
     public function meta()
     {
         $matter = $this->parsed()->matter();
