@@ -61,6 +61,11 @@ class ESMarkdown implements Shooped
         $this->extensions = $extensions;
     }
 
+    public function string(): ESString
+    {
+        return Shoop::string($this->value());
+    }
+
     public function extensions(...$extensions)
     {
         $this->extensions = $extensions;
