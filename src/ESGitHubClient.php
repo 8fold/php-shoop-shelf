@@ -48,6 +48,15 @@ class ESGitHubClient extends ESPath
         }
     }
 
+    public function metaMember($memberName)
+    {
+        $value = $this->markdown()->meta()->{$memberName};
+        if ($value === null) {
+            return Shoop::string("");
+        }
+        return Shoop::this($value);
+    }
+
     public function plus(...$parts)
     {
         $path = $this->parts()->plus(...$parts)->join("/")->start("/");

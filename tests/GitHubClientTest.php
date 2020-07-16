@@ -90,6 +90,17 @@ class GitHubClientTest extends TestCase
 
         $this->assertTrue(is_dir($this->cacheRoot()->plus("/.cache")));
     }
+
+    public function testCanUsePlus()
+    {
+        $expected = "Hello, World!";
+        $actual = $this->client()->plus(
+            "tests",
+            "data",
+            "inner-folder"
+        )->plus("content.md")->markdown();
+        $this->assertEquals($expected, $actual->unfold());
+    }
     // public function testCanGetContent()
     // {
     //     $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
