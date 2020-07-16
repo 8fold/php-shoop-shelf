@@ -34,8 +34,22 @@ class Shoop extends EFShoop
         return ESUri::fold($uri);
     }
 
-    static public function github(string $path, string $personalToken, string $username, string $repo)
+    static public function github(
+        string $path,
+        string $personalToken,
+        string $username,
+        string $repo,
+        string $cacheRootPath = "",
+        string $cacheFolderName = "cache"
+    )
     {
-        return ESGitHubClient::fold($path, $personalToken, $username, $repo);
+        return ESGitHubClient::fold(
+            $path,
+            $personalToken,
+            $username,
+            $repo,
+            $cacheRootPath,
+            $cacheFolderName
+        );
     }
 }
