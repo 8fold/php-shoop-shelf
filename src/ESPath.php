@@ -11,7 +11,10 @@ use Eightfold\Shoop\{
     ESBool
 };
 
-use Eightfold\ShoopExtras\Shoop;
+use Eightfold\ShoopExtras\{
+    Shoop,
+    ESStore
+};
 
 class ESPath implements Shooped
 {
@@ -43,6 +46,11 @@ class ESPath implements Shooped
     public function array(): ESArray
     {
         return $this->parts();
+    }
+
+    public function store(): ESStore
+    {
+        return Shoop::store($this->value());
     }
 
     public function plus(...$parts)
