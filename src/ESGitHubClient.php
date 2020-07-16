@@ -40,12 +40,25 @@ class ESGitHubClient extends ESPath
         $this->ghToken    = $args[0];
         $this->ghUsername = $args[1];
         $this->ghRepo     = $args[2];
+
+        if (isset($args[3]) and strlen($args[3]) > 0) {
+            $this->useCache = true;
+            $this->cacheRootPath   = $args[3];
+            $this->cacheFolderName = $args[4];
+        }
     }
 
     public function plus(...$parts)
     {
         $path = $this->parts()->plus(...$parts)->join("/")->start("/");
-        return static::fold($path, $this->ghToken, $this->ghUsername, $this->ghRepo);
+        return static::fold(
+            $path,
+            $this->ghToken,
+            $this->ghUsername,
+            $this->ghRepo,
+            $this->cacheRootPath,
+            $this->cacheFolderName
+        );
     }
 
     public function client()
@@ -77,7 +90,14 @@ class ESGitHubClient extends ESPath
                 }
                 return "";
             });
-        return $this;
+        return static::fold(
+            $this->value(),
+            $this->ghToken,
+            $this->ghUsername,
+            $this->ghRepo,
+            $this->cacheRootPath,
+            $this->cacheFolderName
+        );
     }
 
     public function exists()
