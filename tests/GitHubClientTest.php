@@ -44,7 +44,7 @@ class GitHubClientTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->rmrf($this->cacheRoot()->plus("/cache"));
+        $this->rmrf($this->cacheRoot()->plus("/.cache"));
     }
 
     public function testCanGetContent()
@@ -79,16 +79,16 @@ class GitHubClientTest extends TestCase
 
     public function testCanUseCache()
     {
-        $this->assertFalse(is_dir($this->cacheRoot()->plus("/cache")));
+        $this->assertFalse(is_dir($this->cacheRoot()->plus("/.cache")));
 
         $actual = $this->client()->plus(
             "tests",
             "data",
             "inner-folder",
             "content.md"
-        )->cache($this->cacheRoot())->markdown();
+        )->cache($this->cacheRoot(), ".cache")->markdown();
 
-        $this->assertTrue(is_dir($this->cacheRoot()->plus("/cache")));
+        $this->assertTrue(is_dir($this->cacheRoot()->plus("/.cache")));
     }
     // public function testCanGetContent()
     // {

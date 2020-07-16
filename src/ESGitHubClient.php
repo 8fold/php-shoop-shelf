@@ -30,6 +30,7 @@ class ESGitHubClient extends ESPath
 
     private $useCache     = false;
     private $cacheRootPath = "";
+    private $cacheFolderName = "cache";
 
     private $client = null;
 
@@ -55,7 +56,7 @@ class ESGitHubClient extends ESPath
             if ($this->useCache) {
                 $adapter = new Local($this->cacheRootPath);
                 $filesystem = new Filesystem($adapter);
-                $pool = new FilesystemCachePool($filesystem);
+                $pool = new FilesystemCachePool($filesystem, $this->cacheFolderName);
                 $this->client->addCache($pool);
             }
 
@@ -64,13 +65,14 @@ class ESGitHubClient extends ESPath
         return $this->client;
     }
 
-    public function cache(string $cacheRootPath = "")
+    public function cache(string $cacheRootPath = "", string $cacheFolderName = "cache")
     {
         $this->cacheRootPath = Shoop::string($cacheRootPath)->countIsGreaterThan(0,
-            function($result, $cacheRootPath) {
+            function($result, $cacheRootPath) use ($cacheFolderName) {
                 if ($result->unfold()) {
                     $this->client = null;
                     $this->useCache = true;
+                    $this->cacheFolderName = $cacheFolderName;
                     return $cacheRootPath;
                 }
                 return "";
