@@ -113,7 +113,7 @@ class ESStore extends ESPath
     {
         return ($this->isFile)
             ? Shoop::array([])
-            : $this->content()->each(function($path) use ($endsWith) {
+            : $this->content()->each(function($path) {
                 $store = Shoop::store($path);
                 return ($store->isFolder)
                     ? $store
