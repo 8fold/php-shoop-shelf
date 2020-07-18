@@ -169,7 +169,7 @@ class ESGitHubClient extends ESPath
                 if ($content->isBinary) {
                     die("image or something");
                 }
-                $content = $this->textContent()->text();
+                $content = $this->textContent();
                 return ($trim)
                     ? $content->trim()
                     : $content;
@@ -239,30 +239,10 @@ class ESGitHubClient extends ESPath
 
     private function textContent()
     {
-        $query = <<<'QUERY'
-        query ($owner: String!, $repo: String!, $path: String!) {
-          repository(owner: $owner, name: $repo) {
-            object(expression: $path) {
-              ... on Blob {
-                text
-              }
-            }
-          }
-        }
-        QUERY;
-        $vars = [
-            "owner" => $this->ghUsername,
-            "repo" => $this->ghRepo,
-            "path" => $this->parts()->countIsGreaterThan(0, function($result, $parts) {
-                return ($result->unfold()) ? "master:". $parts->join("/") : "master:";
-            })
-        ];
-
-        $result = Shoop::dictionary(
-            $this->client()->api("graphql")->execute($query, $vars)
-        )->object()->data()->repository()->object;
-
-        return Shoop::this($result);
+        $text = $this->client()->api("repo")->contents()
+            ->download($this->ghUsername, $this->ghRepo, $this->value());
+        $text = Shoop::string($text);
+        return $text;
     }
 
     public function client()

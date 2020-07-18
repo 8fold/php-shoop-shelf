@@ -121,6 +121,8 @@ class GitHubClientTest extends TestCase
     {
         $this->assertFalse(is_dir($this->cacheRoot()->plus("/.cache")));
 
+        $before = microtime(true);
+
         $actual = $this->client()->plus(
             "tests",
             "data",
@@ -128,7 +130,25 @@ class GitHubClientTest extends TestCase
             "content.md"
         )->cache($this->cacheRoot(), ".cache")->markdown();
 
+        $after = microtime(true);
+
+        $first = $after - $before;
+
         $this->assertTrue(is_dir($this->cacheRoot()->plus("/.cache")));
+
+        $before = microtime(true);
+
+        $actual = $this->client()->plus(
+            "tests",
+            "data",
+            "inner-folder",
+            "content.md"
+        )->cache($this->cacheRoot(), ".cache")->markdown();
+
+        $after = microtime(true);
+
+        $second = $after - $before;
+        $this->assertTrue($first > $second);
     }
 
     public function testCanUsePlus()
