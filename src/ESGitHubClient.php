@@ -48,15 +48,6 @@ class ESGitHubClient extends ESPath
         }
     }
 
-    public function metaMember($memberName)
-    {
-        $value = $this->markdown()->meta()->{$memberName};
-        if ($value === null) {
-            return Shoop::string("");
-        }
-        return Shoop::this($value);
-    }
-
     public function plus(...$parts)
     {
         $path = $this->parts()->plus(...$parts)->join("/")->start("/");
@@ -68,6 +59,210 @@ class ESGitHubClient extends ESPath
             $this->cacheRootPath,
             $this->cacheFolderName
         );
+    }
+
+    public function dropLast($length = 1)
+    {
+        $path = $this->parts()->dropLast($length)->join("/")->start("/");
+        return static::fold(
+            $path,
+            $this->ghToken,
+            $this->ghUsername,
+            $this->ghRepo,
+            $this->cacheRootPath,
+            $this->cacheFolderName
+        );
+    }
+
+    // TODO: Make a Store interface
+    public function files()
+    {
+        return $this->repoContent()->entries()->each(function($entry) {
+            $e = Shoop::dictionary($entry)->object();
+            return ($e->type()->isUnfolded("blob"))
+                ? $this->parts()->plus($e->name)->join("/")->unfold()
+                : "";
+        })->noEmpties();
+    }
+
+    public function folders()
+    {
+        return $this->repoContent()->entries()->each(function($entry) {
+            $e = Shoop::dictionary($entry)->object();
+
+            return ($e->type()->isUnfolded("tree"))
+                ? $this->parts()->plus($e->name)->join("/")->unfold()
+                : "";
+        })->noEmpties();
+    }
+
+    public function isFolder(Closure $closure = null)
+    {
+        $bool = $this->repoContent()->hasMember("object", function($result, $object) {
+            if ($result->unfold() and $object->dictionary["object"] === null) {
+                return false;
+
+            } elseif ($object->hasMemberUnfolded("byteSize")) {
+                return false;
+
+            }
+            return true;
+        });
+        return $this->condition($bool, $closure);
+    }
+
+    public function isNotFolder(Closure $closure = null)
+    {
+        $bool = $this->isFolder()->toggle;
+        return $this->condition($bool, $closure);
+    }
+
+    public function isFile(Closure $closure = null)
+    {
+        $bool = $this->repoContent()->hasMember("object", function($result, $object) {
+            if ($result->unfold() and $object->dictionary["object"] === null) {
+                return false;
+
+            } elseif ($object->hasMemberUnfolded("byteSize")) {
+                return true;
+
+            }
+            return false;
+        });
+        return $this->condition($bool, $closure);
+    }
+
+    public function isNotFile(Closure $closure = null)
+    {
+        $bool = $this->isFile()->toggle;
+        return $this->condition($bool, $closure);
+    }
+
+    // TODO: Use the one from ShoopedImp somehow
+    public function condition($bool, Closure $closure = null)
+    {
+        $bool = Type::sanitizeType($bool, ESBool::class);
+        $value = $this->value();
+        if ($closure === null) {
+            $closure = function($bool, $value) {
+                return $bool;
+            };
+        }
+        return $closure(
+            $bool,
+            Shoop::github(
+                $value,
+                $this->ghToken,
+                $this->ghUsername,
+                $this->ghRepo,
+                $this->cacheRootPath,
+                $this->cacheFolderName
+            )
+        );
+    }
+
+    public function content($trim = true, $ignore = [".", "..", ".DS_Store"])
+    {
+        return $this->isFile(function($result, $client) use ($trim) {
+            if ($result->unfold()) {
+                $content = $client->repoContent();
+                if ($content->isBinary) {
+                    die("image or something");
+                }
+                $content = $this->textContent()->text();
+                return ($trim)
+                    ? $content->trim()
+                    : $content;
+            }
+            return $client->repoContent()->entries()->each(function($entry) {
+                $title = Shoop::dictionary($entry)->name()->start("/");
+                return Shoop::github(
+                    $this->string()->plus($title),
+                    $this->ghToken,
+                    $this->ghUsername,
+                    $this->ghRepo,
+                    $this->cacheRootPath,
+                    $this->cacheFolderName
+                );
+            });
+        });
+    }
+
+    public function markdown()
+    {
+        return Shoop::markdown($this->content());
+    }
+
+    public function metaMember($memberName)
+    {
+        $value = $this->markdown()->meta()->{$memberName};
+        if ($value === null) {
+            return Shoop::string("");
+        }
+        return Shoop::this($value);
+    }
+
+    private function repoContent()
+    {
+        $query = <<<'QUERY'
+        query ($owner: String!, $repo: String!, $path: String!) {
+          repository(owner: $owner, name: $repo) {
+            object(expression: $path) {
+              ... on Blob {
+                byteSize
+                isBinary
+              }
+              ... on Tree {
+                entries {
+                  name
+                  type
+                }
+              }
+            }
+          }
+        }
+        QUERY;
+        $vars = [
+            "owner" => $this->ghUsername,
+            "repo" => $this->ghRepo,
+            "path" => $this->parts()->countIsGreaterThan(0, function($result, $parts) {
+                return ($result->unfold()) ? "master:". $parts->join("/") : "master:";
+            })
+        ];
+
+        $result = Shoop::dictionary(
+            $this->client()->api("graphql")->execute($query, $vars)
+        )->object()->data()->repository()->object;
+
+        return Shoop::this($result);
+    }
+
+    private function textContent()
+    {
+        $query = <<<'QUERY'
+        query ($owner: String!, $repo: String!, $path: String!) {
+          repository(owner: $owner, name: $repo) {
+            object(expression: $path) {
+              ... on Blob {
+                text
+              }
+            }
+          }
+        }
+        QUERY;
+        $vars = [
+            "owner" => $this->ghUsername,
+            "repo" => $this->ghRepo,
+            "path" => $this->parts()->countIsGreaterThan(0, function($result, $parts) {
+                return ($result->unfold()) ? "master:". $parts->join("/") : "master:";
+            })
+        ];
+
+        $result = Shoop::dictionary(
+            $this->client()->api("graphql")->execute($query, $vars)
+        )->object()->data()->repository()->object;
+
+        return Shoop::this($result);
     }
 
     public function client()
@@ -108,149 +303,4 @@ class ESGitHubClient extends ESPath
             $this->cacheFolderName
         );
     }
-
-    public function exists()
-    {
-        $bool = $this->client()->api("repo")->contents()->exists(
-            $this->ghUsername,
-            $this->ghRepo,
-            $this->value()
-        );
-        return Shoop::bool($bool);
-    }
-
-    public function markdown(...$extensions)
-    {
-        if ($this->exists()) {
-            $content = $this->client()->api("repo")->contents()->download(
-                $this->ghUsername,
-                $this->ghRepo,
-                $this->value()
-            );
-            $content = Shoop::string($content)->trim();
-            return Shoop::markdown($content, ...$extensions);
-        }
-        return Shoop::markdown("", ...$extensions);
-    }
-
-    // public function metaMember($memberName)
-    // {
-    //     $value = $this->markdown()->meta()->{$memberName};
-    //     if ($value === null) {
-    //         return Shoop::string("");
-    //     }
-    //     return Shoop::this($value);
-    // }
-
-    // // TODO: Use the one from ShoopedImp somehow
-    // public function condition($bool, Closure $closure = null)
-    // {
-    //     $bool = Type::sanitizeType($bool, ESBool::class);
-    //     $value = $this->value();
-    //     if ($closure === null) {
-    //         $closure = function($bool, $value) {
-    //             return $bool;
-    //         };
-    //     }
-    //     return $closure($bool, Shoop::store($value));
-    // }
-
-    // public function endsWith($needle, Closure $closure = null)
-    // {
-    //     $needle = Type::sanitizeType($needle, ESString::class);
-    //     $bool = Shoop::string($this->value())->endsWith($needle);
-    //     return $this->condition($bool, $closure);
-    // }
-
-    // public function isFolder(Closure $closure = null)
-    // {
-    //     $value = $this->value();
-    //     $bool = is_dir($value);
-    //     return $this->condition($bool, $closure);
-    // }
-
-    // public function isNotFolder(Closure $closure = null)
-    // {
-    //     $bool = $this->isFolder()->toggle;
-    //     return $this->condition($bool, $closure);
-    // }
-
-    // public function isFile(Closure $closure = null)
-    // {
-    //     $value = $this->value();
-    //     $bool = is_file($value);
-    //     return $this->condition($bool, $closure);
-    // }
-
-    // public function isNotFile(Closure $closure = null)
-    // {
-    //     $bool = $this->isFile()->toggle;
-    //     return $this->condition($bool, $closure);
-    // }
-
-    // public function content($trim = true, $ignore = [".", "..", ".DS_Store"])
-    // {
-    //     $trim = Type::sanitizeType($trim, ESBool::class);
-    //     $ignore = Type::sanitizeType($ignore, ESArray::class);
-
-    //     $path = $this->value();
-    //     if (file_exists($path) and is_file($path)) {
-    //         $contents = file_get_contents($path);
-    //         if (strlen($contents) > 0) {
-    //             return ($trim)
-    //                 ? Shoop::string($contents)->trim()
-    //                 : Shoop::string($contents);
-    //         }
-
-    //     } elseif (is_dir($path)) {
-    //         return Shoop::array(scandir($path))->each(
-    //             function($item) use ($path, $trim, $ignore) {
-    //                 $bool = Shoop::array($ignore)->hasUnfolded($item);
-    //                 return ($trim and $bool)
-    //                     ? Shoop::string("")
-    //                     : Shoop::string($path ."/{$item}");
-
-    //         })->noEmpties()->reindex();
-
-    //     }
-    //     return Shoop::string("");
-    // }
-
-    // public function folders()
-    // {
-    //     return ($this->isFile)
-    //         ? Shoop::array([])
-    //         : $this->content()->each(function($path) use ($endsWith) {
-    //             $store = Shoop::store($path);
-    //             return ($store->isFolder)
-    //                 ? $store
-    //                 : Shoop::string("");
-    //         })->noEmpties()->reindex();
-    // }
-
-    // public function files($trim = true, $ignore = [".", "..", ".DS_Store"], $endsWith = "*")
-    // {
-    //     $trim = Type::sanitizeType($trim, ESBool::class);
-    //     $ignore = Type::sanitizeType($ignore, ESArray::class);
-    //     $endsWith = Type::sanitizeType($endsWith, ESString::class);
-    //     return ($this->isFile)
-    //         ? Shoop::array([])
-    //         : $this->content(true, $ignore)->each(function($path) use ($ignore, $endsWith) {
-    //             $store = Shoop::store($path);
-    //             return $store->isFile(function($result, $store) use ($endsWith) {
-    //                 // TODO: One would think this could be simplified unless check is paramount
-    //                 if (! $result->unfold()) {
-    //                     return Shoop::string("");
-
-    //                 } elseif (Shoop::string($endsWith)->isUnfolded("*")) {
-    //                     return $store;
-
-    //                 } elseif ($store->string()->endsWithUnfolded($endsWith)) {
-    //                     return $store;
-
-    //                 }
-    //                 return Shoop::string("");
-    //             });
-    //     })->noEmpties()->reindex();
-    // }
 }
