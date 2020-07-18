@@ -134,7 +134,9 @@ class GitHubClientTest extends TestCase
 
         $first = $after - $before;
 
-        $this->assertTrue(is_dir($this->cacheRoot()->plus("/.cache")));
+        $filePath = $this->cacheRoot()->plus("/.cache");
+        $this->assertTrue(is_dir($filePath));
+        $this->assertTrue($filePath->pathContent()->count > 0);
 
         $before = microtime(true);
 
