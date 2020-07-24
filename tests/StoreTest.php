@@ -81,6 +81,33 @@ class StoreTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
+    /**
+     * Create a file with string content in the destination folder.
+     *
+     * Automatically:
+     * - recursive,
+     * - mode of 0755, and
+     * - forced.
+     */
+    public function testWriteToPath()
+    {
+        $base = __DIR__;
+        $store = ESStore::fold($base)->plus("data", ".writing", "first");
+
+        $expected = "Hello, World!";
+        $actual = $store->saveContent("Hello, World!");
+        $this->assertTrue($actual->isFile);
+        $this->assertEquals($expected, $actual->content);
+
+        $expected = "Um. Hello, World!";
+        $actual = $store->saveContent("Um. ", ESStore::PREPEND);
+        $this->assertEquals($expected, $actual->content);
+
+        $expected = "Um. Hello, World! How are you?";
+        $actual = $store->saveContent(" How are you?", ESStore::APPEND);
+        $this->assertEquals($expected, $actual->content);
+    }
+
     public function testCanGetFilesAndFolders()
     {
         $path = __DIR__ ."/data/inner-folder";
