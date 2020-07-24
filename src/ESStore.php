@@ -19,6 +19,12 @@ use Eightfold\ShoopExtras\Shoop;
 
 class ESStore extends ESPath
 {
+    const PREPEND = "prepend";
+
+    const APPEND = "append";
+
+    const OVERWRITE = "overwrite";
+
     public function markdown(...$extensions)
     {
         return ($this->isFile)
@@ -107,6 +113,32 @@ class ESStore extends ESPath
 
         }
         return Shoop::string("");
+    }
+
+    public function saveContent($content, $placement = ESStore::OVERWRITE, $makeFolder = true)
+    {
+        $content    = Type::sanitizeType($content, ESString::class);
+        $makeFolder = Type::sanitizeType($makeFolder, ESBool::class);
+
+        if ($this->isNotFile()->andUnfolded($makeFolder)) {
+            $this->dropLast()->makeFolder();
+
+        }
+
+        if ($placement === ESStore::PREPEND) {
+            $content = $this->content()->start($content);
+
+        } elseif ($placement === ESStore::APPEND) {
+            $content = $this->content()->plus($content);
+
+        }
+        $bytesOrFalse = file_put_contents($this->unfold(), $content);
+        return $this;
+    }
+
+    private function makeFolder()
+    {
+        @mkdir($this->unfold(), 0755, true);
     }
 
     public function folders()
