@@ -87,6 +87,11 @@ class ESStore extends ESPath
         return $this->condition($bool, $closure);
     }
 
+    public function preview()
+    {
+
+    }
+
     public function content($trim = true, $ignore = [".", "..", ".DS_Store"])
     {
         $trim = Type::sanitizeType($trim, ESBool::class);
@@ -95,20 +100,24 @@ class ESStore extends ESPath
         $path = $this->value();
         if (file_exists($path) and is_file($path)) {
             $contents = file_get_contents($path);
-            if (strlen($contents) > 0) {
-                return ($trim)
-                    ? Shoop::string($contents)->trim()
-                    : Shoop::string($contents);
+            if ($trim->unfold()) {
+                return Shoop::string($contents)->trim();
             }
+            return Shoop::string($contents);
 
         } elseif (is_dir($path)) {
-            return Shoop::array(scandir($path))->each(
-                function($item) use ($path, $trim, $ignore) {
-                    $bool = Shoop::array($ignore)->hasUnfolded($item);
-                    return ($trim and $bool)
-                        ? Shoop::string("")
-                        : Shoop::string($path ."/{$item}");
+            $contents = Shoop::array(scandir($path));
+            if ($trim->unfold()) {
+                $contents = $contents->filter(function($value) use ($ignore, $path) {
+                    return ! in_array($value, $ignore->unfold());
+                });
+                if ($contents->isEmpty) {
+                    return Shoop::array([]);
+                }
+            }
 
+            return $contents->each(function($item) use ($path) {
+                    return Shoop::string($path ."/{$item}");
             })->noEmpties()->reindex();
 
         }
