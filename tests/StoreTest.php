@@ -68,12 +68,24 @@ class StoreTest extends TestCase
         $this->assertSame($expected, $actual);
 
         $expected = [
+            __DIR__ ."/data/.writing",
             __DIR__ ."/data/inner-folder",
             __DIR__ ."/data/link.md",
             __DIR__ ."/data/table.md",
         ];
         $actual = ESStore::fold($path)->content;
         $this->assertSame($expected, $actual);
+
+        $expected = [
+            __DIR__ ."/data/.",
+            __DIR__ ."/data/..",
+            __DIR__ ."/data/.writing",
+            __DIR__ ."/data/inner-folder",
+            __DIR__ ."/data/link.md",
+            __DIR__ ."/data/table.md",
+        ];
+        $actual = ESStore::fold($path)->content(false);
+        $this->assertSame($expected, $actual->unfold());
 
         $path = $path ."/inner-folder/content.md";
         $expected = "Hello, World!";
