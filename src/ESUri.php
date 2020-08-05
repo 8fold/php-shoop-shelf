@@ -15,65 +15,43 @@ use Eightfold\Shoop\{
 
 use Eightfold\ShoopExtras\Shoop;
 
+/**
+ * https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#/media/File:URI_syntax_diagram.svg
+ *
+ * {scheme} - : -˅---------------------------------------------------^ {path} -˅---------- ----^ -˅ -----------------^ -->
+ *               ˅- // -˅ -----------------^- {host} -˅--------------^         ˅- ? - {query} -^  ˅- # - {fragment} -^
+ *                      ˅- {userinfo} - @ -^          ˅- : - {port} -^
+ */
 class ESUri extends ESPath
 {
-    private $raw = "";
-    private $protocolDelimiter = "://";
+    protected $raw = "";
+    protected $schemeDivider = ":";
+    protected $pathDelimiter = "/";
 
-    public function __construct($path)
+    public function __construct($raw, $schemeDivider = ":", $pathDelimiter = "/")
     {
-        $this->raw = $path;
+        $this->raw = Shoop::string($raw);
+        $this->schemeDivider = $schemeDivider;
+        $this->pathDelimiter = $pathDelimiter;
+    }
+
+    public function scheme()
+    {
+        return $this->value()->divide($this->schemeDivider, false, 2)->countIsLessThan(2, function($result, $split) {
+            return ($result->unfold()) ? Shoop::string("") : $split->first();
+        });
+    }
+
+    public function path(bool $withExtras = true)
+    {
+        return $this->value()->divide($this->schemeDivider, false, 2)->countIsLessThan(2, function($result, $split) {
+            return ($result->unfold()) ? Shoop::string("") : $split->last();
+        });
     }
 
     public function value()
     {
-        return Shoop::string($this->raw())
-            ->divide($this->protocolDelimiter, false, 2)->last()
-            ->divide($this->delimiter, false, 2)
-            ->countIsGreaterThan(1, function($result, $path) {
-                return ($result->unfold() or $this->protocol()->isEmpty)
-                    ? $path->last()->start("/")
-                    : Shoop::string("/");
-            });
-    }
-
-    public function tail()
-    {
-        return $this->value();
-    }
-
-    public function parts()
-    {
-        return $this->tail()->divide($this->delimiter, false)->reindex();
-    }
-
-    private function raw()
-    {
         return $this->raw;
-    }
-
-    public function protocolDelimiter($delimiter = "://")
-    {
-        $this->protocolDelimiter = $delimiter;
-        return $this;
-    }
-
-    public function protocol()
-    {
-        return Shoop::string($this->raw())
-            ->divide($this->protocolDelimiter, false, 2)
-            ->countIsGreaterThan(1, function($result, $array) {
-                return ($result->unfold())
-                    ? $array->first()
-                    : Shoop::string("");
-            });
-    }
-
-    public function domain()
-    {
-        return Shoop::string($this->raw())
-            ->divide($this->protocolDelimiter, false, 2)->last()
-            ->divide($this->delimiter, false, 2)->first();
     }
 
     public function unfold()

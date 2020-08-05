@@ -11,72 +11,24 @@ use Eightfold\ShoopExtras\{
 
 class UriTest extends TestCase
 {
-    public function testCanDoAllTheThings()
+    public function testParts()
     {
-        $path = "https://8fold.pro/data/inner-folder";
+        $uri = "mailto:admin@8fold.link";
 
-        $actual = new ESUri($path);
-        $this->assertNotNull($actual);
+        $actual = ESUri::fold($uri);
 
-        $actual = Shoop::uri($path)->protocol;
-        $this->assertEquals("https", $actual);
+        $expected = $uri;
+        $a = $actual->value();
+        $this->assertSame($expected, $a->unfold());
 
-        $actual = Shoop::uri($path)->domain;
-        $this->assertEquals("8fold.pro", $actual);
+        $expected = "mailto";
+        $this->assertSame($expected, $actual->scheme);
 
-        $actual = Shoop::uri($path)->tail;
-        $this->assertEquals("/data/inner-folder", $actual);
+        $expected = "admin@8fold.link";
+        $a = $actual->path(false);
+        $this->assertSame($expected, $a->unfold());
 
-        $actual = Shoop::uri($path)->parts;
-        $this->assertEquals(["data", "inner-folder"], $actual);
-
-        $path = "/data/inner-folder";
-        $expected = 2;
-        $actual = Shoop::uri($path)->parts()->count();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $path = "/";
-        $expected = 0;
-        $actual = Shoop::uri($path)->parts()->count();
-        $this->assertEquals($expected, $actual->unfold());
-    }
-
-    public function testCanHandleRoot()
-    {
-        // "http://localhost" - root
-        $path = "http://localhost";
-        $expected = "/";
-        $actual = Shoop::uri($path);
-        $this->assertEquals($expected, $actual->unfold());
-
-        // "http://localhost/" - root
-        $path = "http://localhost/";
-        $expected = "/";
-        $actual = Shoop::uri($path);
-        $this->assertEquals($expected, $actual->unfold());
-
-        // "http://localhost/sub"
-        $path = "http://localhost/sub";
-        $expected = "/sub";
-        $actual = Shoop::uri($path);
-        $this->assertEquals($expected, $actual->unfold());
-
-        // "http://localhost/sub/sub"
-        $path = "http://localhost/sub/sub";
-        $expected = "/sub/sub";
-        $actual = Shoop::uri($path);
-        $this->assertEquals($expected, $actual->unfold());
-
-        // "/" - root
-        $path = "/";
-        $expected = "/";
-        $actual = Shoop::uri($path);
-        $this->assertEquals($expected, $actual->unfold());
-
-        // "/sub"
-        $path = "/sub";
-        $expected = "/sub";
-        $actual = Shoop::uri($path);
-        $this->assertEquals($expected, $actual->unfold());
+        $expected = "admin@8fold.link";
+        $this->assertSame($expected, $actual->path);
     }
 }
