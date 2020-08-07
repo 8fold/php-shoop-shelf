@@ -22,11 +22,16 @@ use Eightfold\ShoopExtras\Shoop;
  *               ˅- // -˅ -----------------^- {host} -˅--------------^         ˅- ? - {query} -^  ˅- # - {fragment} -^
  *                      ˅- {userinfo} - @ -^          ˅- : - {port} -^
  */
-class ESUri extends ESPath
+class ESUri
 {
     protected $raw = "";
     protected $schemeDivider = ":";
     protected $pathDelimiter = "/";
+
+    static public function fold($main, $schemeDivider = ":", $pathDelimiter = "/")
+    {
+        return new static($main, $schemeDivider = ":", $pathDelimiter = "/");
+    }
 
     public function __construct($raw, $schemeDivider = ":", $pathDelimiter = "/")
     {
