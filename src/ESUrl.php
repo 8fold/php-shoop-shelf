@@ -25,6 +25,11 @@ use Eightfold\ShoopExtras\Shoop;
  */
 class ESUrl extends ESUri
 {
+    static public function fold($main, $schemeDivider = "://", $pathDelimiter = "/")
+    {
+        return new static($main, $schemeDivider = "://", $pathDelimiter = "/");
+    }
+
     public function __construct($raw, $schemeDivider = "://", $pathDelimiter = "/")
     {
         parent::__construct($raw, $schemeDivider, $pathDelimiter);

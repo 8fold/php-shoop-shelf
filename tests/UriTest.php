@@ -21,14 +21,16 @@ class UriTest extends TestCase
         $a = $actual->value();
         $this->assertSame($expected, $a->unfold());
 
+        // TODO: Make more shoop-like
         $expected = "mailto";
-        $this->assertSame($expected, $actual->scheme);
+        $this->assertSame($expected, $actual->scheme()->unfold());
 
         $expected = "admin@8fold.link";
         $a = $actual->path(false);
         $this->assertSame($expected, $a->unfold());
 
+        // TODO: Make more shoop-like
         $expected = "admin@8fold.link";
-        $this->assertSame($expected, $actual->path);
+        $this->assertSame($expected, $actual->path()->unfold());
     }
 }

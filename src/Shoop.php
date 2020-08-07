@@ -9,7 +9,7 @@ use Eightfold\ShoopExtras\{
     ESMarkdown,
     ESPath,
     ESUri,
-    ESGitHubClient
+    ESUrl
 };
 
 class Shoop extends EFShoop
@@ -32,6 +32,11 @@ class Shoop extends EFShoop
     static public function uri($uri)
     {
         return ESUri::fold($uri);
+    }
+
+    static public function url($url)
+    {
+        return ESUrl::fold($url);
     }
 
     static public function github(
