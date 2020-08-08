@@ -6,6 +6,7 @@ use Eightfold\Shoop\{
     Helpers\Type,
     Interfaces\Shooped,
     Traits\ShoopedImp,
+    ESDictionary,
     ESString,
     ESArray,
     ESBool
@@ -25,99 +26,123 @@ use Eightfold\ShoopExtras\Shoop;
  */
 class ESUrl extends ESUri
 {
-    static public function fold($main, $schemeDivider = "://", $pathDelimiter = "/")
+    static public function processedMain($main)
     {
-        return new static($main, $schemeDivider = "://", $pathDelimiter = "/");
+        return Type::sanitizeType($main, ESString::class)->unfold();
     }
 
-    public function __construct($raw, $schemeDivider = "://", $pathDelimiter = "/")
+    static public function processedArgs(...$args): array
     {
-        parent::__construct($raw, $schemeDivider, $pathDelimiter);
+        $temp = [];
+
+        $temp[] = (isset($args[0]))
+            ? Type::sanitizeType($args[0], ESString::class)->unfold()
+            : "://";
+
+        $temp[] = (isset($args[1]))
+            ? Type::sanitizeType($args[1], ESString::class)->unfold()
+            : "/";
+
+        return $temp;
     }
 
-    public function path(bool $withExtras = true)
+    public function path(bool $withExtras = true): ESPath
     {
         return ($withExtras)
             ? parent::path()
-            : parent::path()->divide($this->pathDelimiter, false, 2)->countIsLessThan(2, function($result, $split) {
-                if ($result->unfold()) { return Shoop::string(""); }
+            : parent::path()->string()->divide($this->pathDelimiter(), false, 2)
+                ->countIsLessThan(2, function($result, $split) {
+                    if ($result->unfold()) { return Shoop::path(""); }
 
-                return $split->last()->divide("?", false, 2)->first();
+                    $string = $split->last()->divide("?", false, 2)->first()
+                        ->start($this->pathDelimiter())->unfold();
+
+                    return Shoop::path($string);
+                });
+    }
+
+    private function userAndPassword(): ESString
+    {
+        return $this->path()->string()->divide("@", false, 2)
+            ->countIsGreaterThan(2, function($result, $split) {
+                return ($result->unfold())
+                    ? Shoop::string("")
+                    : $split->first();
             });
     }
 
-    private function userAndPassword()
+    public function user(): ESString
     {
-        return $this->path()->divide("@", false, 2)->countIsGreaterThan(2, function($result, $split) {
-            return ($result->unfold()) ? Shoop::string("") : $split->first();
-        });
+        return $this->userAndPassword()->divide(":", false, 2)
+            ->countIsGreaterThan(2, function($result, $split) {
+                return ($result->unfold())
+                    ? Shoop::string("")
+                    : $split->first();
+            });
     }
 
-    public function user()
+    public function password(): ESString
     {
-        return $this->userAndPassword()->divide(":", false, 2)->countIsGreaterThan(2, function($result, $split) {
-            return ($result->unfold())
-                ? Shoop::string("")
-                : $split->first();
-        });
+        return $this->userAndPassword()->divide(":", false, 2)
+            ->countIsGreaterThan(2, function($result, $split) {
+                return ($result->unfold())
+                    ? Shoop::string("")
+                    : $split->last();
+            });
     }
 
-    public function password()
+    public function hostAndPort(): ESString
     {
-        return $this->userAndPassword()->divide(":", false, 2)->countIsGreaterThan(2, function($result, $split) {
-            return ($result->unfold())
-                ? Shoop::string("")
-                : $split->last();
-        });
+        return $this->path()->string()->divide("@", false, 2)
+            ->countIsLessThan(2, function($result, $split) {
+                return ($result->unfold())
+                    ? Shoop::string("")
+                    : $split->last()->divide($this->pathDelimiter, false, 2)
+                        ->countIsLessThan(2, function($result, $split) {
+                            return ($result->unfold())
+                                ? Shoop::string("")
+                                : $split->first();
+                        });
+            });
     }
 
-    public function hostAndPort()
-    {
-        return $this->path()->divide("@", false, 2)->countIsLessThan(2, function($result, $split) {
-            return ($result->unfold())
-                ? Shoop::string("")
-                : $split->last()->divide($this->pathDelimiter, false, 2)->countIsLessThan(2, function($result, $split) {
-                    return ($result->unfold())
-                        ? Shoop::string("")
-                        : $split->first();
-                });
-        });
-    }
-
-    public function host()
+    public function host(): ESString
     {
         return $this->hostAndPort()->divide(":", false, 2)->first();
     }
 
     public function port()
     {
-        return $this->hostAndPort()->divide(":", false, 2)->countIsLessThan(2, function($result, $split) {
-            return ($result->unfold()) ? Shoop::string("") : $split->last();
-        });
+        return $this->hostAndPort()->divide(":", false, 2)
+            ->countIsLessThan(2, function($result, $split) {
+                return ($result->unfold()) ? Shoop::string("") : $split->last();
+            });
     }
 
-    public function query()
+    public function query(): ESDictionary
     {
-        return $this->path()->divide("?", false, 2)->countIsLessThan(2, function($result, $split) {
-            if ($result->unfold()) { return Shoop::dictionary([]); }
+        return $this->path()->string()->divide("?", false, 2)
+            ->countIsLessThan(2, function($result, $split) {
+                if ($result->unfold()) { return Shoop::dictionary([]); }
 
-            // TODO: Make this part of ESArray - alternating value-member pairs, convert to ESDictionary
-            //      Should this be the raional default of converting an ESArray to an ESDictionary
-            $members = [];
-            $values = [];
-            $split->last()->divide("#", false, 2)->first()->divide("&", false)->each(function($pair) use (&$members, &$values) {
-                list($member, $value) = Shoop::string($pair)->divide("=");
-                $members[] = $member;
-                $values[]  = $value;
+                // TODO: Make this part of ESArray - alternating value-member pairs, convert to ESDictionary
+                //      Should this be the raional default of converting an ESArray to an ESDictionary
+                $members = [];
+                $values  = [];
+                $split->last()->divide("#", false, 2)->first()->divide("&", false)
+                    ->each(function($pair) use (&$members, &$values) {
+                        list($member, $value) = Shoop::string($pair)->divide("=");
+                        $members[] = $member;
+                        $values[]  = $value;
+                    });
+                $combined = array_combine($members, $values);
+                return Shoop::dictionary($combined);
             });
-            $combined = array_combine($members, $values);
-            return Shoop::dictionary($combined);
-        });
     }
 
     public function fragment()
     {
-        return $this->path()->divide("#", false, 2)->countIsLessThan(2, function($result, $split) {
+        return $this->path()->string()->divide("#", false, 2)->countIsLessThan(2, function($result, $split) {
             if ($result->unfold()) { return Shoop::string(""); }
             return $split->last();
         });

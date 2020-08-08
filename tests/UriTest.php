@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use Eightfold\ShoopExtras\{
     Shoop,
+    ESPath,
     ESUri
 };
 
@@ -18,7 +19,7 @@ class UriTest extends TestCase
         $actual = ESUri::fold($uri);
 
         $expected = $uri;
-        $a = $actual->value();
+        $a = $actual;
         $this->assertSame($expected, $a->unfold());
 
         // TODO: Make more shoop-like
@@ -32,5 +33,7 @@ class UriTest extends TestCase
         // TODO: Make more shoop-like
         $expected = "admin@8fold.link";
         $this->assertSame($expected, $actual->path()->unfold());
+
+        $this->assertTrue(is_a($actual->path(), ESPath::class));
     }
 }

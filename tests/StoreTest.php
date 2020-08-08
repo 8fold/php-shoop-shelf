@@ -20,7 +20,7 @@ class StoreTest extends TestCase
         $actual = ESStore::fold($path);
         $this->assertNotNull($actual);
 
-        $actual = ESStore::fold($path)->value;
+        $actual = ESStore::fold($path)->main;
         $this->assertEquals($path, $actual);
 
         $actual = ESStore::fold($path)->isFolder;
@@ -46,13 +46,13 @@ class StoreTest extends TestCase
     {
         $path = __DIR__ ."/data";
 
-        $expected = [
-            __DIR__ ."/data/inner-folder/content.md",
-            __DIR__ ."/data/inner-folder/file.extension",
-            __DIR__ ."/data/inner-folder/subfolder"
-        ];
-        $actual = ESStore::fold($path)->plus("inner-folder")->content();
-        $this->assertSame($expected, $actual->unfold());
+        // $expected = [
+        //     __DIR__ ."/data/inner-folder/content.md",
+        //     __DIR__ ."/data/inner-folder/file.extension",
+        //     __DIR__ ."/data/inner-folder/subfolder"
+        // ];
+        // $actual = ESStore::fold($path)->plus("inner-folder")->content();
+        // $this->assertSame($expected, $actual->unfold());
 
         $expected = [
             __DIR__ ."/data/inner-folder/subfolder"
@@ -93,7 +93,7 @@ class StoreTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
-    /**
+    /*
      * Create a file with string content in the destination folder.
      *
      * Automatically:
@@ -141,18 +141,6 @@ class StoreTest extends TestCase
         $this->assertSame($expected, $actual->unfold());
     }
 
-    public function testCanGetMetaMember()
-    {
-        $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
-        $expected = "Something";
-        $actual = ESStore::fold($path)->metaMember("title");
-        $this->assertSame($expected, $actual->unfold());
-
-        $expected = "";
-        $actual = ESStore::fold($path)->metaMember("heading");
-        $this->assertEquals($expected, $actual->unfold());
-    }
-
     public function testCanUnfold()
     {
         $expected = Shoop::string(__DIR__)->divide("/")->dropLast()
@@ -181,5 +169,18 @@ class StoreTest extends TestCase
         $actual = Shoop::store(__DIR__)->plus("file.extension")
             ->endsWith(".extension");
         $this->assertSame($expected, $actual->unfold());
+    }
+
+
+    public function testCanGetMetaMember()
+    {
+        $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
+        $expected = "Something";
+        $actual = ESStore::fold($path)->metaMember("title");
+        $this->assertSame($expected, $actual->unfold());
+
+        // $expected = "";
+        // $actual = ESStore::fold($path)->metaMember("heading");
+        // $this->assertEquals($expected, $actual->unfold());
     }
 }

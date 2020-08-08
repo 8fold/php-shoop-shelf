@@ -32,7 +32,7 @@ class MarkdownTest extends TestCase
         $content = file_get_contents($path);
 
         $expected = "---\ntitle: Something\n---\n\nMarkdown text\n";
-        $actual = ESMarkdown::fold($content)->value;
+        $actual = ESMarkdown::fold($content)->main;
         $this->assertEquals($expected, $actual);
 
         $actual = ESMarkdown::fold($content)->unfold();

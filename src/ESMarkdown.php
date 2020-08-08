@@ -34,16 +34,21 @@ use Eightfold\Markup\UIKit;
 use Eightfold\ShoopExtras\Shoop;
 
 use Eightfold\Shoop\{
+    Interfaces\Foldable,
+    Traits\FoldableImp,
     ESArray,
     ESBool,
     ESDictionary
 };
 
-class ESMarkdown implements Shooped
+class ESMarkdown implements Foldable
 {
-    use ShoopedImp;
+    use FoldableImp;
 
-    private $extensions = [];
+    static public function processedMain($main)
+    {
+        return Type::sanitizeType($main, ESString::class)->unfold();
+    }
 
     static public function foldFromPath($path, ...$extensions)
     {
@@ -55,26 +60,19 @@ class ESMarkdown implements Shooped
             });
     }
 
-    public function __construct($content, ...$extensions)
-    {
-        $this->value = Type::sanitizeType($content, ESString::class)->unfold();
-        $this->extensions = $extensions;
-    }
-
     public function string(): ESString
     {
-        return Shoop::string($this->value());
+        return Shoop::string($this->main());
     }
 
-    public function extensions(...$extensions)
+    public function extensions(...$args): ESMarkdown
     {
-        $this->extensions = $extensions;
-        return $this;
+        return static::fold($this->main(), ...$args);
     }
 
     private function parsed()
     {
-        return YamlFrontMatter::parse($this->value());
+        return YamlFrontMatter::parse($this->main());
     }
 
     public function body()
@@ -89,10 +87,22 @@ class ESMarkdown implements Shooped
         return Shoop::object($matter);
     }
 
-    public function content($markdownReplacements = [], $caseSensitive = true, $trim = true)
+    public function content(
+        $markdownReplacements = [],
+        $caseSensitive = true,
+        $trim = true
+    )
     {
-        $markdownReplacements = Type::sanitizeType($markdownReplacements, ESDictionary::class)->unfold();
-        $caseSensitive = Type::sanitizeType($caseSensitive, ESBool::class)->unfold();
+        $markdownReplacements = Type::sanitizeType(
+            $markdownReplacements,
+            ESDictionary::class
+        )->unfold();
+
+        $caseSensitive = Type::sanitizeType(
+            $caseSensitive,
+            ESBool::class
+        )->unfold();
+
         $trim = Type::sanitizeType($trim, ESBool::class)->unfold();
 
         $body = $this->parsed()->body();
@@ -103,7 +113,7 @@ class ESMarkdown implements Shooped
         if ($trim) {
             $replaced = $replaced->trim();
         }
-        return static::fold($replaced);
+        return static::fold($replaced, ...$this->args());
     }
 
     public function html(
@@ -121,9 +131,10 @@ class ESMarkdown implements Shooped
             ->unfold();
 
         $environment = Environment::createCommonMarkEnvironment();
-        Shoop::array($this->extensions)->each(function($extension) use ($environment) {
-            $environment->addExtension(new $extension());
-        });
+        Shoop::array($this->args())
+            ->each(function($extension) use ($environment) {
+                $environment->addExtension(new $extension());
+            });
 
         $html = (new CommonMarkConverter($config, $environment))
             ->convertToHtml($content);
