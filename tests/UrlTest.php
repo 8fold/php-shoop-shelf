@@ -18,13 +18,14 @@ class UrlTest extends TestCase
         $actual = ESUrl::fold($url);
 
         $expected = $url;
-        $a = $actual->value();
-        $this->assertSame($expected, $a->unfold());
+        $a = $actual->main();
+        $this->assertSame($expected, $a);
 
         $expected = "https";
         $this->assertSame($expected, $actual->scheme()->unfold());
 
-        $expected = "some/path/to";
+        // TODO: Prefix with a forward slash - BC
+        $expected = "/some/path/to";
         $a = $actual->path(false);
         $this->assertSame($expected, $a->unfold());
 

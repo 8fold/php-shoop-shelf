@@ -5,8 +5,8 @@ namespace Eightfold\ShoopExtras;
 use Eightfold\ShoopExtras\ESPath;
 
 use Eightfold\Shoop\Helpers\Type;
-use Eightfold\Shoop\Interfaces\Shooped;
-use Eightfold\Shoop\Traits\ShoopedImp;
+use Eightfold\Shoop\Interfaces\Foldable;
+use Eightfold\Shoop\Traits\FoldableImp;
 use Eightfold\Shoop\{
     ESString,
     ESArray,
@@ -22,45 +22,47 @@ use Eightfold\ShoopExtras\Shoop;
  *               ˅- // -˅ -----------------^- {host} -˅--------------^         ˅- ? - {query} -^  ˅- # - {fragment} -^
  *                      ˅- {userinfo} - @ -^          ˅- : - {port} -^
  */
-class ESUri
+class ESUri implements Foldable
 {
-    protected $raw = "";
-    protected $schemeDivider = ":";
-    protected $pathDelimiter = "/";
+    use FoldableImp;
 
-    static public function fold($main, $schemeDivider = ":", $pathDelimiter = "/")
+    static public function processedMain($main)
     {
-        return new static($main, $schemeDivider = ":", $pathDelimiter = "/");
+        return Type::sanitizeType($main, ESString::class)->unfold();
     }
 
-    public function __construct($raw, $schemeDivider = ":", $pathDelimiter = "/")
+    private function schemeDivider(): string
     {
-        $this->raw = Shoop::string($raw);
-        $this->schemeDivider = $schemeDivider;
-        $this->pathDelimiter = $pathDelimiter;
+        return (isset($this->args[0])) ? $this->args[0] : ":";
     }
 
-    public function scheme()
+    protected function pathDelimiter(): string
     {
-        return $this->value()->divide($this->schemeDivider, false, 2)->countIsLessThan(2, function($result, $split) {
-            return ($result->unfold()) ? Shoop::string("") : $split->first();
-        });
+        return (isset($this->args[1])) ? $this->args[1] : "/";
     }
 
-    public function path(bool $withExtras = true)
+    public function scheme(): ESString
     {
-        return $this->value()->divide($this->schemeDivider, false, 2)->countIsLessThan(2, function($result, $split) {
-            return ($result->unfold()) ? Shoop::string("") : $split->last();
-        });
+        return $this->string()->divide($this->schemeDivider(), false, 2)
+            ->countIsLessThan(2, function($result, $split) {
+                return ($result->unfold())
+                    ? Shoop::string("")
+                    : $split->first();
+            });
     }
 
-    public function value()
+    public function path(bool $withExtras = true): ESPath
     {
-        return $this->raw;
+        return $this->string()->divide($this->schemeDivider(), false, 2)
+            ->countIsLessThan(2, function($result, $split) {
+                return ($result->unfold())
+                    ? Shoop::path("")
+                    : Shoop::path($split->last);
+            });
     }
 
-    public function unfold()
+    public function string()
     {
-        return $this->value();
+        return Shoop::string($this->main());
     }
 }

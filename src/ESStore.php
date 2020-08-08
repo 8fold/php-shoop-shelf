@@ -41,29 +41,16 @@ class ESStore extends ESPath
         return Shoop::this($value);
     }
 
-    // TODO: Use the one from ShoopedImp somehow
-    public function condition($bool, Closure $closure = null)
-    {
-        $bool = Type::sanitizeType($bool, ESBool::class);
-        $value = $this->value();
-        if ($closure === null) {
-            $closure = function($bool, $value) {
-                return $bool;
-            };
-        }
-        return $closure($bool, Shoop::store($value));
-    }
-
     public function endsWith($needle, Closure $closure = null)
     {
         $needle = Type::sanitizeType($needle, ESString::class);
-        $bool = Shoop::string($this->value())->endsWith($needle);
+        $bool = Shoop::string($this->main())->endsWith($needle);
         return $this->condition($bool, $closure);
     }
 
     public function isFolder(Closure $closure = null)
     {
-        $value = $this->value();
+        $value = $this->main();
         $bool = is_dir($value);
         return $this->condition($bool, $closure);
     }
@@ -76,7 +63,7 @@ class ESStore extends ESPath
 
     public function isFile(Closure $closure = null)
     {
-        $value = $this->value();
+        $value = $this->main();
         $bool = is_file($value);
         return $this->condition($bool, $closure);
     }
@@ -87,17 +74,15 @@ class ESStore extends ESPath
         return $this->condition($bool, $closure);
     }
 
-    public function preview()
+    public function content(
+        $trim = true,
+        $ignore = [".", "..", ".DS_Store"]
+    ) // PHP 8.0 ESString|ESArray
     {
-
-    }
-
-    public function content($trim = true, $ignore = [".", "..", ".DS_Store"])
-    {
-        $trim = Type::sanitizeType($trim, ESBool::class);
+        $trim   = Type::sanitizeType($trim, ESBool::class);
         $ignore = Type::sanitizeType($ignore, ESArray::class);
 
-        $path = $this->value();
+        $path = $this->main();
         if (file_exists($path) and is_file($path)) {
             $contents = file_get_contents($path);
             if ($trim->unfold()) {
@@ -108,9 +93,10 @@ class ESStore extends ESPath
         } elseif (is_dir($path)) {
             $contents = Shoop::array(scandir($path));
             if ($trim->unfold()) {
-                $contents = $contents->filter(function($value) use ($ignore, $path) {
+                $contents = $contents->filter(function($value) use ($ignore) {
                     return ! in_array($value, $ignore->unfold());
                 });
+
                 if ($contents->isEmpty) {
                     return Shoop::array([]);
                 }
@@ -124,12 +110,16 @@ class ESStore extends ESPath
         return Shoop::string("");
     }
 
-    public function saveContent($content, $placement = ESStore::OVERWRITE, $makeFolder = true)
+    public function saveContent(
+        $content,
+        $placement = ESStore::OVERWRITE,
+        $makeFolder = true
+    )
     {
         $content    = Type::sanitizeType($content, ESString::class);
         $makeFolder = Type::sanitizeType($makeFolder, ESBool::class);
 
-        if ($this->isNotFile()->andUnfolded($makeFolder)) {
+        if ($this->isNotFile() and $makeFolder->unfold()) {
             $this->dropLast()->makeFolder();
 
         }
@@ -150,41 +140,47 @@ class ESStore extends ESPath
         @mkdir($this->unfold(), 0755, true);
     }
 
-    public function folders()
+    public function folders(): ESArray
     {
         return ($this->isFile)
             ? Shoop::array([])
             : $this->content()->each(function($path) {
                 $store = Shoop::store($path);
                 return ($store->isFolder)
-                    ? $store
+                    ? $store->unfold()
                     : Shoop::string("");
             })->noEmpties()->reindex();
     }
 
-    public function files($trim = true, $ignore = [".", "..", ".DS_Store"], $endsWith = "*")
+    public function files(
+        $trim = true,
+        $ignore = [".", "..", ".DS_Store"],
+        $endsWith = "*"
+    ): ESArray
     {
-        $trim = Type::sanitizeType($trim, ESBool::class);
-        $ignore = Type::sanitizeType($ignore, ESArray::class);
+        $trim     = Type::sanitizeType($trim, ESBool::class);
+        $ignore   = Type::sanitizeType($ignore, ESArray::class);
         $endsWith = Type::sanitizeType($endsWith, ESString::class);
         return ($this->isFile)
             ? Shoop::array([])
-            : $this->content(true, $ignore)->each(function($path) use ($ignore, $endsWith) {
-                $store = Shoop::store($path);
-                return $store->isFile(function($result, $store) use ($endsWith) {
-                    // TODO: One would think this could be simplified unless check is paramount
-                    if (! $result->unfold()) {
-                        return Shoop::string("");
+            : $this->content(true, $ignore)
+                ->each(function($path) use ($ignore, $endsWith) {
+                    $store = Shoop::store($path);
+                    return $store->isFile(
+                        function($result, $store) use ($endsWith) {
+                            // TODO: One would think this could be simplified unless check is paramount
+                            if (! $result->unfold()) {
+                                return Shoop::string("");
 
-                    } elseif (Shoop::string($endsWith)->isUnfolded("*")) {
-                        return $store;
+                            } elseif (Shoop::string($endsWith)->isUnfolded("*")) {
+                                return $store->unfold();
 
-                    } elseif ($store->string()->endsWithUnfolded($endsWith)) {
-                        return $store;
+                            } elseif ($store->string()->endsWithUnfolded($endsWith)) {
+                                return $store->unfold();
 
-                    }
-                    return Shoop::string("");
-                });
-        })->noEmpties()->reindex();
+                            }
+                            return Shoop::string("");
+                        });
+                })->noEmpties()->reindex();
     }
 }

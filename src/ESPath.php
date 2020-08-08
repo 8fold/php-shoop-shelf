@@ -2,10 +2,11 @@
 
 namespace Eightfold\ShoopExtras;
 
-use Eightfold\Shoop\Helpers\Type;
-use Eightfold\Shoop\Interfaces\Shooped;
-use Eightfold\Shoop\Traits\ShoopedImp;
+use Eightfold\Shoop\Interfaces\Foldable;
+use Eightfold\Shoop\Traits\FoldableImp;
+
 use Eightfold\Shoop\{
+    Helpers\Type,
     ESString,
     ESArray,
     ESBool
@@ -13,34 +14,50 @@ use Eightfold\Shoop\{
 
 use Eightfold\ShoopExtras\{
     Shoop,
+    ESInt,
     ESStore
 };
 
-class ESPath implements Shooped
+class ESPath implements Foldable
 {
-    use ShoopedImp;
+    use FoldableImp;
 
-    protected $delimiter = "/";
-
-    public function __construct($path)
+    static public function processedMain($main)
     {
-        $this->value = Type::sanitizeType($path, ESString::class)->unfold();
+        return Type::sanitizeType($main, ESString::class)->unfold();
     }
 
-    public function delimiter($delimiter = "/")
+    private function delimiter()
     {
-        $this->delimiter = $delimiter;
-        return $this;
+        return (isset($this->args[0])) ? $this->args[0] : "/";
     }
 
-    public function string(): ESString
+    // public function store(): ESStore
+    // {
+    //     return Shoop::store($this->value());
+    // }
+
+    public function plus(...$parts)
     {
-        return Shoop::string($this->value());
+        $path = $this->array()->plus(...$parts)->join("/")->start("/");
+        return static::fold($path);
+    }
+
+    public function dropLast($length = 1)
+    {
+        $length = Type::sanitizeType($length, ESInt::class)->unfold();
+        $path = $this->array()->dropLast($length)->join("/")->start("/");
+        return static::fold($path);
     }
 
     public function parts()
     {
-        return $this->string()->divide($this->delimiter, false)->reindex();
+        return $this->string()->divide($this->delimiter(), false)->reindex();
+    }
+
+    public function string(): ESString
+    {
+        return Shoop::string($this->main());
     }
 
     public function array(): ESArray
@@ -48,26 +65,9 @@ class ESPath implements Shooped
         return $this->parts();
     }
 
-    public function store(): ESStore
-    {
-        return Shoop::store($this->value());
-    }
-
-    public function plus(...$parts)
-    {
-        $path = $this->parts()->plus(...$parts)->join("/")->start("/");
-        return static::fold($path);
-    }
-
-    public function dropLast($length = 1)
-    {
-        $path = $this->parts()->dropLast($length)->join("/")->start("/");
-        return static::fold($path);
-    }
-
-    public function noEmpties()
-    {
-        $path = $this->parts()->join("/")->start("/");
-        return satic::fold($path);
-    }
+    // public function noEmpties()
+    // {
+    //     $path = $this->parts()->join("/")->start("/");
+    //     return satic::fold($path);
+    // }
 }
