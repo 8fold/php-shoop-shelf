@@ -8,14 +8,13 @@ use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\DocParser;
 use League\CommonMark\Environment;
 use League\CommonMark\HtmlRenderer;
-use League\CommonMark\Extension\{
-    GithubFlavoredMarkdownExtension,
-    Autolink\AutolinkExtension,
-    DisallowedRawHtml\DisallowedRawHtmlExtension,
-    Strikethrough\StrikethroughExtension,
-    Table\TableExtension,
-    TaskList\TaskListExtension
-};
+
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\Extension\Autolink\AutolinkExtension;
+use League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension;
+use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
+use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\Extension\TaskList\TaskListExtension;
 
 use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension;
 use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
