@@ -1,6 +1,6 @@
 {
-  "name": "8fold/php-shoop-extras",
-  "description": "An extension of Shoop for data types that are not base data types.",
+  "name": "8fold/php-shoop-shelf",
+  "description": "Shoop-like objects that cannot fit at the 8fold Shoop table.",
   "type": "library",
   "license": "MIT",
   "authors": [
