@@ -1,7 +1,13 @@
-# 8fold Shoop Extras
+# 8fold Shoop Shelf
 
-Shoop extras is an extension library and test tube for 8fold Shoop types.
+Shoop Shelf is an extension of [8fold Shoop](https://github.com/8fold/php-shoop) it is for Shoop-like objects that aren't able to fit on the Shoop table.
 
-As an extension you will find types that are not available in Shoop or that are not easily accessible using Shoop.
+To be classified as a Shoop type the specified type must:
 
-As a test tube, some of the extension types may not be as stable as what you will find in Shoop.
+a. be inferrable from the given value (Markdown, for example, cannot be inferred from a string the same way JSON can), and
+b. have a rational representation in all other Shoop types.
+
+These extensions do not match this criteria; however, they can be:
+
+1. can be just as useful and
+2. follow a similar development strategy and pattern from Shoop.
