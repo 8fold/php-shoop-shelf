@@ -1,13 +1,12 @@
 <?php
 
-namespace Eightfold\ShoopExtras\Tests;
+namespace Eightfold\ShoopShelf\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
-use Eightfold\ShoopExtras\{
-    Shoop,
-    ESUrl
-};
+use Eightfold\ShoopShelf\Shoop;
+use Eightfold\ShoopShelf\ESUrl;
 
 class UrlTest extends TestCase
 {

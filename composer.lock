@@ -8,20 +8,19 @@
     "packages": [
         {
             "name": "8fold/php-foldable",
-            "version": "0.0.14",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-foldable.git",
-                "reference": "e92e36e15b38095df362ee4e5799b1d7cc955f18"
+                "reference": "d7b638db742b32d72fcec61cec6c9659f158d5aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-foldable/zipball/e92e36e15b38095df362ee4e5799b1d7cc955f18",
-                "reference": "e92e36e15b38095df362ee4e5799b1d7cc955f18",
+                "url": "https://api.github.com/repos/8fold/php-foldable/zipball/d7b638db742b32d72fcec61cec6c9659f158d5aa",
+                "reference": "d7b638db742b32d72fcec61cec6c9659f158d5aa",
                 "shasum": ""
             },
             "require": {
-                "league/pipeline": "^1.0",
                 "php": "~7"
             },
             "require-dev": {
@@ -54,24 +53,25 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-03T16:16:16+00:00"
+            "time": "2020-09-05T17:06:43+00:00"
         },
         {
             "name": "8fold/php-shoop",
-            "version": "0.7.0",
+            "version": "0.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-shoop.git",
-                "reference": "4f15278da48b97bec4322e2d18bcf532a7cb9fad"
+                "reference": "690d3adb065b261ec4c6ad35a2c198701f985b84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/4f15278da48b97bec4322e2d18bcf532a7cb9fad",
-                "reference": "4f15278da48b97bec4322e2d18bcf532a7cb9fad",
+                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/690d3adb065b261ec4c6ad35a2c198701f985b84",
+                "reference": "690d3adb065b261ec4c6ad35a2c198701f985b84",
                 "shasum": ""
             },
             "require": {
-                "8fold/php-foldable": "~0.0.0",
+                "8fold/php-foldable": "~1.0",
+                "nikic/iter": "^2.0",
                 "php": "~7"
             },
             "require-dev": {
@@ -104,7 +104,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-08-28T03:50:41+00:00"
+            "time": "2020-09-04T22:09:13+00:00"
         },
         {
             "name": "league/commonmark",
@@ -202,57 +202,55 @@
             "time": "2020-08-18T01:19:12+00:00"
         },
         {
-            "name": "league/pipeline",
-            "version": "1.0.0",
+            "name": "nikic/iter",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/thephpleague/pipeline.git",
-                "reference": "aa14b0e3133121f8be39e9a3b6ddd011fc5bb9a8"
+                "url": "https://github.com/nikic/iter.git",
+                "reference": "1417341030a43fba0764486f7ad49ccc7b76e73f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/pipeline/zipball/aa14b0e3133121f8be39e9a3b6ddd011fc5bb9a8",
-                "reference": "aa14b0e3133121f8be39e9a3b6ddd011fc5bb9a8",
+                "url": "https://api.github.com/repos/nikic/iter/zipball/1417341030a43fba0764486f7ad49ccc7b76e73f",
+                "reference": "1417341030a43fba0764486f7ad49ccc7b76e73f",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": "^7.1"
             },
             "require-dev": {
-                "leanphp/phpspec-code-coverage": "^4.2",
-                "phpspec/phpspec": "^4.3"
+                "phpunit/phpunit": "~7.0"
             },
             "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "League\\Pipeline\\": "src"
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
                 }
+            },
+            "autoload": {
+                "files": [
+                    "src/iter.func.php",
+                    "src/iter.php",
+                    "src/iter.rewindable.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
-                    "name": "Frank de Jonge",
-                    "email": "info@frenky.net",
-                    "role": "Author"
-                },
-                {
-                    "name": "Woody Gilk",
-                    "email": "woody.gilk@gmail.com",
-                    "role": "Maintainer"
+                    "name": "Nikita Popov",
+                    "email": "nikic@php.net"
                 }
             ],
-            "description": "A plug and play pipeline implementation.",
+            "description": "Iteration primitives using generators",
             "keywords": [
-                "composition",
-                "design pattern",
-                "pattern",
-                "pipeline",
-                "sequential"
+                "functional",
+                "generator",
+                "iterator"
             ],
-            "time": "2018-06-05T21:06:51+00:00"
+            "time": "2019-05-12T20:50:16+00:00"
         },
         {
             "name": "spatie/yaml-front-matter",

@@ -29,104 +29,59 @@ class JsonTest extends TestCase
         $expected = [$json, $json, $json, $json];
         $actual = ESJson::fold('{"member":"value","member2":"value2"}')->multiply(4);
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    /**
-     * @return Eightfold\Shoop\ESJson Sets the value of the member to the given value.
-     */
-    public function ESJson()
-    {
         $base = '{}';
 
         $expected = '{"test":"test"}';
         $actual = ESJson::fold($base)->set("test", "test");
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $json = Shoop::json('{"member":"test"}');
         $expected = new \stdClass();
         $expected->member = "test";
         $expected = json_encode($expected);
         $actual = json_encode($json);
         $this->assertEquals($expected, $actual);
-    }
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
         AssertEqualsFluent::applyWith(true, 2.39)
             ->unfoldUsing(ESJson::fold('{"test":"test"}')->asBoolean());
 
         AssertEqualsFluent::applyWith(false)
             ->unfoldUsing(ESJson::fold('{}')->asBoolean());
-    }
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
         AssertEqualsFluent::applyWith(["test" => true], 1.84)
             ->unfoldUsing(ESJson::fold('{"test":true}')->asDictionary());
-    }
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
         AssertEqualsFluent::applyWith(1, 2.31)
             ->unfoldUsing(ESJson::fold('{"test":"test"}')->asInteger());
-    }
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
         AssertEqualsFluent::applyWith('{"test":"test"}', 1.55)
             ->unfoldUsing(ESJson::fold('{"test":"test"}')->asJson());
-    }
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
-        // $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
+        $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
 
-        // $expected = '{"member3":"value3"}';
-        // $actual = ESJson::fold($base)->dropFirst(2);
-        // $this->assertEquals($expected, $actual);
+        $expected = '{"member3":"value3"}';
+        $actual = ESJson::fold($base)->dropFirst(2);
+        $this->assertEquals($expected, $actual);
 
-        // $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
+        $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
 
-        // $expected = '{"member":"value"}';
-        // $actual = ESJson::fold($base)->dropLast(2);
-        // $this->assertEquals($expected, $actual);
+        $expected = '{"member":"value"}';
+        $actual = ESJson::fold($base)->dropLast(2);
+        $this->assertEquals($expected, $actual);
 
-        // $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
+        $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
 
-        // $expected = '{"member2":"value2"}';
-        // $actual = ESJson::fold($base)->drop("member", "member3");
-        // $this->assertEquals($expected, $actual);
+        $expected = '{"member2":"value2"}';
+        $actual = ESJson::fold($base)->drop("member", "member3");
+        $this->assertEquals($expected, $actual);
 
-        // $base = '{"member":false, "member2":"value2", "member3":0}';
+        $base = '{"member":false, "member2":"value2", "member3":0}';
 
-        // $expected = '{"member2":"value2"}';
-        // $actual = ESJson::fold($base)->noEmpties();
-        // $this->assertEquals($expected, $actual);
-    }
+        $expected = '{"member2":"value2"}';
+        $actual = ESJson::fold($base)->noEmpties();
+        $this->assertEquals($expected, $actual);
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
         $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
         $actual = ESJson::fold($base)->has("value3");
         $this->assertTrue($actual->unfold());
@@ -156,10 +111,7 @@ class JsonTest extends TestCase
         $base = '{"events":{"2020":{"5":{"20":[{"title": "Event at Meetup"}]}}}}';
         $actual = ESJson::fold($base)->getEvents()->hasMember("2020");
         $this->assertTrue($actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
         $actual = ESJson::fold($base)->hasMember("member2");
         $this->assertTrue($actual->unfold());
@@ -175,13 +127,7 @@ class JsonTest extends TestCase
             return $result;
         });
         $this->assertTrue($actual->unfold());
-    }
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
         AssertEqualsFluent::applyWith(
             "test",
             ESString::class,
@@ -189,37 +135,22 @@ class JsonTest extends TestCase
         )->unfoldUsing(
             Shoop::this('{"test":"test"}')->asString()
         );
-    }
 
-    /**
-     * @test
-     */
-    public function ESJson()
-    {
         AssertEqualsFluent::applyWith((object) ["test" => "test"], 4.18)
             ->unfoldUsing(ESJson::fold('{"test":"test"}')->asTuple());
-    }
 
-    public function ESJson()
-    {
         $base = json_encode(["member" => "value", "member2" => "value2", "member3" => "value3"]);
 
         $actual = ESJson::fold($base)->doesNotEndWith("value3", "member3");
         $this->assertEquals(ESBoolean::class, get_class($actual));
         $this->assertFalse($actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = json_encode(["member" => "value", "member2" => "value2", "member3" => "value3"]);
 
         $actual = ESJson::fold($base)->doesNotStartWith("value3", "member3");
         $this->assertEquals(ESBoolean::class, get_class($actual));
         $this->assertTrue($actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = json_encode(["member" => "value", "member2" => "value2", "member3" => "value3"]);
 
         $actual = ESJson::fold($base)->endsWith("value3", "member3");
@@ -235,20 +166,14 @@ class JsonTest extends TestCase
                 return false;
         });
         $this->assertSame($base, $actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = '{"member2":"value2", "member3":"value3"}';
 
         $expected = json_encode(["member2" => "value2", "member3" => "value3", "member" => "value"]);
         $actual = ESJson::fold($base)->end("value", "member");
         $this->assertEquals(ESJson::class, get_class($actual));
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
 
         $expected = "value";
@@ -259,10 +184,7 @@ class JsonTest extends TestCase
         $expected = ["value", "value2", "value3"];
         $actual = ESJson::fold($base)->first(3);
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = '{"member":"value", "member2":"value2", "member3":"value3"}';
 
         $expected = "value3";
@@ -273,10 +195,7 @@ class JsonTest extends TestCase
         $expected = ["value2", "value3"];
         $actual = ESJson::fold($base)->last(2);
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = json_encode(["member" => "value", "member2" => "value2", "member3" => "value3"]);
 
         $actual = ESJson::fold($base)->startsWith("value", "member");
@@ -291,10 +210,7 @@ class JsonTest extends TestCase
                 return false;
         });
         $this->assertSame($base, $actual->unfold());
-    }
 
-    public function ESJson()
-    {
         $base = '{"member2":"value2", "member3":"value3"}';
 
         $expected = json_encode(["member" => "value", "member2" => "value2", "member3" => "value3"]);

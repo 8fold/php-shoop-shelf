@@ -1,88 +1,158 @@
 <?php
 
-namespace Eightfold\ShoopExtras\Tests;
+namespace Eightfold\ShoopShelf\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
-use Eightfold\ShoopExtras\Shoop;
+use Eightfold\ShoopShelf\Shoop;
 
-use Eightfold\ShoopExtras\ESMarkdown;
+use Eightfold\ShoopShelf\FluentTypes\ESString;
+use Eightfold\ShoopShelf\FluentTypes\ESMarkdown;
 
-use League\CommonMark\Extension\{
-    GithubFlavoredMarkdownExtension,
-    Autolink\AutolinkExtension,
-    DisallowedRawHtml\DisallowedRawHtmlExtension,
-    Strikethrough\StrikethroughExtension,
-    Table\TableExtension,
-    TaskList\TaskListExtension
-};
-
+use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension;
-use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
-use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkRenderer;
-use League\CommonMark\Extension\InlinesOnly\InlinesOnlyExtension;
-use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
-use League\CommonMark\Extension\SmartPunct\SmartPunctExtension;
 
+/**
+ * @group Markdown
+ */
 class MarkdownTest extends TestCase
 {
-    public function testCanGetContent()
+    /**
+     * @test
+     */
+    public function file_content_is_markdown()
     {
         $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
-        $content = file_get_contents($path);
 
-        $expected = "---\ntitle: Something\n---\n\nMarkdown text\n";
-        $actual = ESMarkdown::fold($content)->main;
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            $path,
+            "string",
+            4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->plus(
+                "data",
+                "inner-folder",
+                "subfolder",
+                "inner.md"
+            )
+        );
 
-        $actual = ESMarkdown::fold($content)->unfold();
-        $this->assertSame($expected, $actual);
+        AssertEquals::applyWith(
+            "---\ntitle: Something\n---\n\nMarkdown text\n",
+            "string",
+            0.33
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->plus(
+                "data",
+                "inner-folder",
+                "subfolder",
+                "inner.md"
+            )->content()
+        );
+
+        AssertEquals::applyWith(
+            "---\ntitle: Something\n---\n\nMarkdown text\n",
+            "string"
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->plus(
+                "data",
+                "inner-folder",
+                "subfolder",
+                "inner.md"
+            )->markdown()
+        );
+
+        $actual = Shoop::store(__DIR__)->plus(
+            "data",
+            "inner-folder",
+            "subfolder",
+            "inner.md"
+        )->content();
+        $this->assertTrue(is_a($actual, ESString::class));
+
+        $actual = Shoop::store(__DIR__)->plus(
+            "data",
+            "inner-folder",
+            "subfolder",
+            "inner.md"
+        )->content()->markdown();
+        $this->assertTrue(is_a($actual, ESMarkdown::class));
+
+        $actual = Shoop::store(__DIR__)->plus(
+            "data",
+            "inner-folder",
+            "subfolder",
+            "inner.md"
+        )->markdown();
+        $this->assertTrue(is_a($actual, ESMarkdown::class));
     }
 
-    public function testCanGetParsed()
+    /**
+     * @test
+     */
+    public function meta_and_replacements()
     {
-        $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
-        $content = file_get_contents($path);
+        AssertEquals::applyWith(
+            "Something",
+            "string",
+            6.19 // 5.99 // 5.64 // 4.48 // 4.4
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->plus(
+                "data",
+                "inner-folder",
+                "subfolder",
+                "inner.md"
+            )->markdown()->title()
+        );
 
-        $expected = new \stdClass();
-        $expected->title = "Something";
-        $actual = ESMarkdown::fold($content)->meta;
-        $this->assertEquals($expected, $actual);
-
-        $expected = "<i>Markdown content</i>";
-        $actual = ESMarkdown::fold($content)->html([
-            "text" => "content"
-        ], [
-            "<p>" => "<i>",
-            "</p>" => "</i>"
-        ]);
-        $this->assertEquals($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            '<i>Markdown content</i>',
+            "string",
+            35.48 // 11.92
+        )->unfoldUsing(
+            Shoop::markdown("Markdown content")->html([
+                "text" => "content"
+            ], [
+                "<p>" => "<i>",
+                "</p>" => "</i>"
+            ])
+        );
     }
 
-    public function testExtensions()
+    /**
+     * @test
+     */
+    public function extensions()
     {
         $path = __DIR__ ."/data/table.md";
 
-        $expected = "<p>|THead ||:-----||TBody |</p>";
-        $actual = ESMarkdown::foldFromPath($path)->html();
-        $this->assertSame($expected, $actual->unfold());
-
-        $expected = '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>';
-        $actual = ESMarkdown::foldFromPath($path, TableExtension::class)->html();
-        $this->assertSame($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>',
+            "string",
+            21.9
+        )->unfoldUsing(
+            Shoop::store($path)->markdown()
+                ->extensions(TableExtension::class)->html()
+        );
 
         $path = __DIR__ ."/data/link.md";
-        $expected = '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>';
-        $actual = ESMarkdown::foldFromPath($path)->extensions(
-            ExternalLinkExtension::class
-        )->html(
-            [], [], true, true, [
-                'html_input' => 'strip',
-                "external_link" => [
-                    "open_in_new_window" => true
-                ]
-            ]
+
+        AssertEquals::applyWith(
+            '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>',
+            "string",
+            5.41
+        )->unfoldUsing(
+            Shoop::store($path)->markdown()
+                ->extensions(ExternalLinkExtension::class)
+                ->html(
+                    [], [], true, true, [
+                        'html_input' => 'strip',
+                        "external_link" => [
+                            "open_in_new_window" => true
+                        ]
+                    ]
+                )
         );
-        $this->assertSame($expected, $actual->unfold());
     }
 }

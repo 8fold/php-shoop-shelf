@@ -91,63 +91,48 @@ class ArrayTest extends TestCase
      */
     public function ESArray()
     {
-        // $using = ["hello", "goodbye", "hello"];
-        // AssertEqualsFluent::applyWith(
-        //     ["goodbye"],
-        //     ESArray::class,
-        //     3.63
-        // )->unfoldUsing(
-        //     Shoop::this($using)->minusAt([0, 2])
-        // );
+        $using = ["hello", "goodbye", "hello"];
+        AssertEqualsFluent::applyWith(
+            ["goodbye"],
+            ESArray::class,
+            3.63
+        )->unfoldUsing(
+            Shoop::this($using)->minusAt([0, 2])
+        );
 
-        // $base = ["hello", "world"];
+        $base = ["hello", "world"];
 
-        // $expected = [];
-        // $actual = Shoop::array($base)->dropFirst(2);
-        // $this->assertEquals($expected, $actual->unfold());
+        $expected = [];
+        $actual = Shoop::array($base)->dropFirst(2);
+        $this->assertEquals($expected, $actual->unfold());
 
-        // $base = ["hello", "world"];
+        $base = ["hello", "world"];
 
-        // $expected = [];
-        // $actual = Shoop::array($base)->dropLast(2);
-        // $this->assertEquals($expected, $actual->unfold());
+        $expected = [];
+        $actual = Shoop::array($base)->dropLast(2);
+        $this->assertEquals($expected, $actual->unfold());
 
-        // $base = ["hello", "world"];
+        $base = ["hello", "world"];
 
-        // $expected = ["hello"];
-        // $actual = Shoop::array($base)->drop(1);
-        // $this->assertEquals($expected, $actual->unfold());
+        $expected = ["hello"];
+        $actual = Shoop::array($base)->drop(1);
+        $this->assertEquals($expected, $actual->unfold());
 
-        // $base = [0, null];
+        $base = [0, null];
 
-        // $expected = [];
-        // $actual = Shoop::array($base)->noEmpties();
-        // $this->assertEquals($expected, $actual->unfold());
-    }
+        $expected = [];
+        $actual = Shoop::array($base)->noEmpties();
+        $this->assertEquals($expected, $actual->unfold());
 
-    /**
-     * @return Eightfold\Shoop\ESArray After setting the value for the index.
-     */
-    public function ESArray()
-    {
         $expected = ["hello", "world"];
         $actual = ESArray::fold(["hello", "Shoop"])->set("world", 1);
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    public function ESArray()
-    {
         $expected = "{}";
         $actual = json_encode(ESArray::fold([]));
 
         $this->assertEquals($expected, $actual);
-    }
 
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
         AssertEqualsFluent::applyWith(
             [],
             ESArray::class,
@@ -155,6 +140,175 @@ class ArrayTest extends TestCase
         )->unfoldUsing(
             Shoop::this([])->asArray()
         );
+
+        $base = ["hello", "world"];
+        $actual = ESArray::fold($base)->has("world");
+        $this->assertTrue($actual->unfold());
+
+        $expected = "h";
+        $actual = ESArray::fold($base)->has("hello", function($result, $value) {
+            if ($result->unfold()) {
+                return "h";
+            }
+            return null;
+        });
+        $this->assertSame($expected, $actual->unfold());
+
+        $expected = "h";
+        $actual = ESArray::fold($base)->doesNothave(
+            "hi", function($result, $value) {
+                if ($result->unfold()) {
+                    return null;
+                }
+                return "h";
+        });
+        $this->assertSame($expected, $actual->unfold());
+
+        $actual = ESArray::fold($base)->hasMember(0);
+        $this->assertTrue($actual->unfold());
+
+        $base = ["hello", "world"];
+        $actual = ESArray::fold($base)->hasMember(1);
+        $this->assertTrue($actual->unfold());
+
+        $actual = ESArray::fold($base)->hasMember(0, function($result, $value) {
+            return $result;
+        });
+        $this->assertTrue($actual->unfold());
+
+        $actual = ESArray::fold($base)->doesNotHaveMember(
+            0, function($result, $value) {
+            return $result;
+        });
+        $this->assertFalse($actual->unfold());
+
+        AssertEqualsFluent::applyWith(true, 6.43)
+            ->unfoldUsing(ESArray::fold(["testing"])->asBoolean());
+
+        AssertEqualsFluent::applyWith(false)
+            ->unfoldUsing(
+                ESArray::fold([])->asBoolean()
+            );
+
+        AssertEqualsFluent::applyWith(["i0" => "hi"], 1.64)
+            ->unfoldUsing(ESArray::fold(["hi"])->asDictionary());
+
+        AssertEqualsFluent::applyWith(1, 1.58)
+            ->unfoldUsing(ESArray::fold(['testing'])->asInteger());
+
+        AssertEqualsFluent::applyWith('{}', 3.67)
+            ->unfoldUsing(ESArray::fold([])->asJson());
+
+        AssertEqualsFluent::applyWith('{"i0":"testing"}', 2.93)
+            ->unfoldUsing(ESArray::fold(['testing'])->asJson());
+
+        AssertEqualsFluent::applyWith(
+            "",
+            ESString::class,
+            9.19
+        )->unfoldUsing(
+            Shoop::this([])->asString()
+        );
+
+        AssertEqualsFluent::applyWith(
+            "testing something",
+            ESString::class
+        )->unfoldUsing(
+            Shoop::this(["testing", " something"])->asString()
+        );
+
+        AssertEqualsFluent::applyWith((object) ["i0" => "testing"], 5.08)
+            ->unfoldUsing(ESArray::fold(["testing"])->asTuple());
+
+        $base = ["something", "hello", "world"];
+
+        $actual = Shoop::array($base)->doesNotEndWith("something");
+        $this->assertEquals(ESBoolean::class, get_class($actual));
+        $this->assertTrue($actual->unfold());
+
+        $base = ["something", "hello", "world"];
+
+        $actual = Shoop::array($base)->doesNotStartWith("hello", "world");
+        $this->assertEquals(ESBoolean::class, get_class($actual));
+        $this->assertTrue($actual->unfold());
+
+        $base = ["something", "hello", "world"];
+
+        $actual = Shoop::array($base)->endsWith("hello", "world");
+        $this->assertEquals(ESBoolean::class, get_class($actual));
+        $this->assertTrue($actual->unfold());
+
+        $actual = Shoop::array($base)->endsWith(
+            "hello", "world", function($result, $value) {
+                if ($result) {
+                    return $value;
+                }
+                return false;
+        });
+        $this->assertSame($base, $actual->unfold());
+
+        $base = ["hello", "world"];
+
+        $expected = ["hello", "world", "something"];
+        $actual = Shoop::array($base)->end("something");
+        $this->assertEquals(ESArray::class, get_class($actual));
+        $this->assertEquals($expected, $actual->unfold());
+
+        $base = ["hello", "world"];
+
+        $expected = "hello";
+        $actual = Shoop::array($base)->first();
+        $this->assertEquals(ESString::class, get_class($actual));
+        $this->assertEquals($expected, $actual);
+
+        $expected = ["hello", "world"];
+        $actual = Shoop::array($base)->first(2);
+        $this->assertEquals($expected, $actual->unfold());
+
+        $base = ["hello", "world"];
+
+        $expected = "world";
+        $actual = Shoop::array($base)->last();
+        $this->assertEquals(ESString::class, get_class($actual));
+        $this->assertEquals($expected, $actual);
+
+        $expected = ["hello", "world"];
+        $actual = Shoop::array($base)->last(2);
+        $this->assertEquals($expected, $actual->unfold());
+
+        $expected = 1;
+        $actual = Shoop::array([1])->last();
+        $this->assertEquals($expected, $actual->unfold());
+
+        $expected = "";
+        $actual = Shoop::array([])->last();
+        $this->assertEquals($expected, $actual->unfold());
+
+        $expected = "";
+        $actual = Shoop::array([])->first();
+        $this->assertEquals($expected, $actual->unfold());
+
+        $base = ["something", "hello", "world"];
+
+        $actual = Shoop::array($base)->startsWith("something");
+        $this->assertEquals(ESBoolean::class, get_class($actual));
+        $this->assertTrue($actual->unfold());
+
+        $actual = Shoop::array($base)->startsWith(
+            "something", "hello", function($result, $value) {
+                if ($result->unfold()) {
+                    return $value;
+                }
+                return false;
+        });
+        $this->assertSame($base, $actual->unfold());
+
+        $base = ["hello", "world"];
+
+        $expected = ["something", "hello", "world"];
+        $actual = Shoop::array($base)->start("something");
+        $this->assertEquals(ESArray::class, get_class($actual));
+        $this->assertEquals($expected, $actual->unfold());
     }
 
     /**
@@ -239,246 +393,5 @@ class ArrayTest extends TestCase
         )->unfoldUsing(
             Shoop::this("hello")->asArray()
         );
-    }
-
-    public function ESArray()
-    {
-        $base = ["hello", "world"];
-        $actual = ESArray::fold($base)->has("world");
-        $this->assertTrue($actual->unfold());
-
-        $expected = "h";
-        $actual = ESArray::fold($base)->has("hello", function($result, $value) {
-            if ($result->unfold()) {
-                return "h";
-            }
-            return null;
-        });
-        $this->assertSame($expected, $actual->unfold());
-
-        $expected = "h";
-        $actual = ESArray::fold($base)->doesNothave(
-            "hi", function($result, $value) {
-                if ($result->unfold()) {
-                    return null;
-                }
-                return "h";
-        });
-        $this->assertSame($expected, $actual->unfold());
-
-        $actual = ESArray::fold($base)->hasMember(0);
-        $this->assertTrue($actual->unfold());
-    }
-
-    public function ESArray()
-    {
-        $base = ["hello", "world"];
-        $actual = ESArray::fold($base)->hasMember(1);
-        $this->assertTrue($actual->unfold());
-
-        $actual = ESArray::fold($base)->hasMember(0, function($result, $value) {
-            return $result;
-        });
-        $this->assertTrue($actual->unfold());
-
-        $actual = ESArray::fold($base)->doesNotHaveMember(
-            0, function($result, $value) {
-            return $result;
-        });
-        $this->assertFalse($actual->unfold());
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        AssertEqualsFluent::applyWith(true, 6.43)
-            ->unfoldUsing(ESArray::fold(["testing"])->asBoolean());
-
-        AssertEqualsFluent::applyWith(false)
-            ->unfoldUsing(
-                ESArray::fold([])->asBoolean()
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        AssertEqualsFluent::applyWith(["i0" => "hi"], 1.64)
-            ->unfoldUsing(ESArray::fold(["hi"])->asDictionary());
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        AssertEqualsFluent::applyWith(1, 1.58)
-            ->unfoldUsing(ESArray::fold(['testing'])->asInteger());
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        AssertEqualsFluent::applyWith('{}', 3.67)
-            ->unfoldUsing(ESArray::fold([])->asJson());
-
-        AssertEqualsFluent::applyWith('{"i0":"testing"}', 2.93)
-            ->unfoldUsing(ESArray::fold(['testing'])->asJson());
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        AssertEqualsFluent::applyWith(
-            "",
-            ESString::class,
-            9.19
-        )->unfoldUsing(
-            Shoop::this([])->asString()
-        );
-
-        AssertEqualsFluent::applyWith(
-            "testing something",
-            ESString::class
-        )->unfoldUsing(
-            Shoop::this(["testing", " something"])->asString()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        AssertEqualsFluent::applyWith((object) ["i0" => "testing"], 5.08)
-            ->unfoldUsing(ESArray::fold(["testing"])->asTuple());
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        $base = ["something", "hello", "world"];
-
-        $actual = Shoop::array($base)->doesNotEndWith("something");
-        $this->assertEquals(ESBoolean::class, get_class($actual));
-        $this->assertTrue($actual->unfold());
-    }
-
-    /**
-     * @test
-     */
-    public function ESArray()
-    {
-        $base = ["something", "hello", "world"];
-
-        $actual = Shoop::array($base)->doesNotStartWith("hello", "world");
-        $this->assertEquals(ESBoolean::class, get_class($actual));
-        $this->assertTrue($actual->unfold());
-    }
-
-    public function ESArray()
-    {
-        $base = ["something", "hello", "world"];
-
-        $actual = Shoop::array($base)->endsWith("hello", "world");
-        $this->assertEquals(ESBoolean::class, get_class($actual));
-        $this->assertTrue($actual->unfold());
-
-        $actual = Shoop::array($base)->endsWith(
-            "hello", "world", function($result, $value) {
-                if ($result) {
-                    return $value;
-                }
-                return false;
-        });
-        $this->assertSame($base, $actual->unfold());
-    }
-
-    public function ESArray()
-    {
-        $base = ["hello", "world"];
-
-        $expected = ["hello", "world", "something"];
-        $actual = Shoop::array($base)->end("something");
-        $this->assertEquals(ESArray::class, get_class($actual));
-        $this->assertEquals($expected, $actual->unfold());
-    }
-
-    public function ESArray()
-    {
-        $base = ["hello", "world"];
-
-        $expected = "hello";
-        $actual = Shoop::array($base)->first();
-        $this->assertEquals(ESString::class, get_class($actual));
-        $this->assertEquals($expected, $actual);
-
-        $expected = ["hello", "world"];
-        $actual = Shoop::array($base)->first(2);
-        $this->assertEquals($expected, $actual->unfold());
-    }
-
-    public function ESArray()
-    {
-        $base = ["hello", "world"];
-
-        $expected = "world";
-        $actual = Shoop::array($base)->last();
-        $this->assertEquals(ESString::class, get_class($actual));
-        $this->assertEquals($expected, $actual);
-
-        $expected = ["hello", "world"];
-        $actual = Shoop::array($base)->last(2);
-        $this->assertEquals($expected, $actual->unfold());
-
-        $expected = 1;
-        $actual = Shoop::array([1])->last();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $expected = "";
-        $actual = Shoop::array([])->last();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $expected = "";
-        $actual = Shoop::array([])->first();
-        $this->assertEquals($expected, $actual->unfold());
-    }
-
-    public function ESArray()
-    {
-        $base = ["something", "hello", "world"];
-
-        $actual = Shoop::array($base)->startsWith("something");
-        $this->assertEquals(ESBoolean::class, get_class($actual));
-        $this->assertTrue($actual->unfold());
-
-        $actual = Shoop::array($base)->startsWith(
-            "something", "hello", function($result, $value) {
-                if ($result->unfold()) {
-                    return $value;
-                }
-                return false;
-        });
-        $this->assertSame($base, $actual->unfold());
-    }
-
-    public function ESArray()
-    {
-        $base = ["hello", "world"];
-
-        $expected = ["something", "hello", "world"];
-        $actual = Shoop::array($base)->start("something");
-        $this->assertEquals(ESArray::class, get_class($actual));
-        $this->assertEquals($expected, $actual->unfold());
     }
 }

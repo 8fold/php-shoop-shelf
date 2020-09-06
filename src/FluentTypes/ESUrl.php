@@ -1,20 +1,21 @@
 <?php
+declare(strict_types=1);
 
-namespace Eightfold\ShoopExtras;
+namespace Eightfold\ShoopShelf\FluentTypes;
 
-use Eightfold\Shoop\{
-    Helpers\Type,
-    Interfaces\Shooped,
-    Traits\ShoopedImp,
-    ESDictionary,
-    ESString,
-    ESArray,
-    ESBool
-};
+// use Eightfold\Shoop\{
+//     Helpers\Type,
+//     Interfaces\Shooped,
+//     Traits\ShoopedImp,
+//     ESDictionary,
+//     ESString,
+//     ESArray,
+//     ESBool
+// };
 
-use Eightfold\ShoopExtras\ESPath;
-use Eightfold\ShoopExtras\ESUri;
-use Eightfold\ShoopExtras\Shoop;
+// use Eightfold\ShoopShelf\ESPath;
+// use Eightfold\ShoopShelf\ESUri;
+// use Eightfold\ShoopShelf\Shoop;
 
 /**
  * https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#/media/File:URI_syntax_diagram.svg

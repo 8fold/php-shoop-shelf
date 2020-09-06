@@ -282,60 +282,44 @@ class StringTest extends TestCase
      */
     public function ESString()
     {
-        // $base = "Hello, World!";
+        $base = "Hello, World!";
 
-        // $expected = "World!";
-        // $actual = ESString::fold($base)->dropFirst(7);
-        // $this->assertEquals($expected, $actual->unfold());
+        $expected = "World!";
+        $actual = ESString::fold($base)->dropFirst(7);
+        $this->assertEquals($expected, $actual->unfold());
 
-        // $expected = "ello, World!";
-        // $actual = Shoop::string($base)->dropFirst();
-        // $this->assertEquals($expected, $actual->unfold());
+        $expected = "ello, World!";
+        $actual = Shoop::string($base)->dropFirst();
+        $this->assertEquals($expected, $actual->unfold());
 
-        // $base = "Hello, World!";
+        $base = "Hello, World!";
 
-        // $expected = "Hello";
-        // $actual = ESString::fold($base)->dropLast(8);
-        // $this->assertEquals($expected, $actual->unfold());
+        $expected = "Hello";
+        $actual = ESString::fold($base)->dropLast(8);
+        $this->assertEquals($expected, $actual->unfold());
 
-        // $base = "Hello, World!";
+        $base = "Hello, World!";
 
-        // $expected = "Hlo ol!";
-        // $actual = ESString::fold($base)->drop(1, 3, 5, 7, 9, 11);
-        // $this->assertEquals($expected, $actual->unfold());
+        $expected = "Hlo ol!";
+        $actual = ESString::fold($base)->drop(1, 3, 5, 7, 9, 11);
+        $this->assertEquals($expected, $actual->unfold());
 
-        // $base = "Hell0, W0rld!";
+        $base = "Hell0, W0rld!";
 
-        // $expected = "Hell,Wrld!";
-        // $actual = ESString::fold($base)->noEmpties();
-        // $this->assertEquals($expected, $actual->unfold());
-    }
+        $expected = "Hell,Wrld!";
+        $actual = ESString::fold($base)->noEmpties();
+        $this->assertEquals($expected, $actual->unfold());
 
-
-    /**
-     * Uses the `str_repeat()` function from the PHP standard library to generate a string that repeats using the original value.
-     */
-    public function ESString()
-    {
         $expected = "Hello, World!Hello, World!";
         $actual = ESString::fold("Hello, World!")->multiply(2);
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    /**
-     * @return Eightfold\Shoop\FluentTypes\ESString Sets the value of the string to the given string.
-     */
-    public function ESString()
-    {
         $base = "alphabet soup";
 
         $expected = "hello";
         $actual = ESString::fold($base)->set($expected);
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    public function ESString()
-    {
         $base = "Hello, World!";
 
         $actual = ESString::fold($base)->hasMember(13);
@@ -352,53 +336,26 @@ class StringTest extends TestCase
             return $result;
         });
         $this->assertTrue($actual->unfold());
-    }
 
-    public function ESString()
-    {
         $expected = '{"string":"hello"}';
         $actual = json_encode(Shoop::string("hello"));
         $this->assertEquals($expected, $actual);
-    }
 
-    /**
-     * @test
-     */
-    public function ESString()
-    {
         AssertEqualsFluent::applyWith(false, 2.52)
             ->unfoldUsing(ESString::fold("")->asBoolean());
 
         AssertEqualsFluent::applyWith(true)
             ->unfoldUsing(ESString::fold("hello")->asBoolean());
-    }
 
-    /**
-     * @test
-     */
-    public function ESString()
-    {
         AssertEqualsFluent::applyWith(1, 2.59)
             ->unfoldUsing(ESString::fold("0")->asInteger());
 
         AssertEqualsFluent::applyWith(5)
             ->unfoldUsing(ESString::fold("hello")->asInteger());
-    }
 
-   /**
-     * @test
-     */
-    public function ESString()
-    {
         AssertEqualsFluent::applyWith('{"scalar":"hello"}', 7.99)
             ->unfoldUsing(ESString::fold('{"scalar":"hello"}')->asJson());
-    }
 
-    /**
-     * @test
-     */
-    public function ESString()
-    {
         AssertEqualsFluent::applyWith(
             "hello",
             ESString::class,
@@ -406,31 +363,13 @@ class StringTest extends TestCase
         )->unfoldUsing(
             Shoop::this("hello")->asString()
         );
-    }
 
-    /**
-     * @test
-     */
-    public function ESString()
-    {
         AssertEqualsFluent::applyWith(["content" => "hello"], 3.26)
             ->unfoldUsing(ESString::fold("hello")->asDictionary());
-    }
 
-    /**
-     * @test
-     */
-    public function ESString()
-    {
         AssertEqualsFluent::applyWith((object) ["content" => ""], 6.36)
             ->unfoldUsing(ESString::fold("")->asTuple());
-    }
 
-    /**
-     * @test
-     */
-    public function ESString()
-    {
         $actual = ESString::fold("a")->has("b");
         $this->assertFalse($actual->unfold());
 
@@ -456,26 +395,17 @@ class StringTest extends TestCase
                 return "t";
         });
         $this->assertSame($expected, $actual->unfold());
-    }
 
-    public function ESString()
-    {
         $base = "Hello, World!";
         $actual = Shoop::string($base)->doesNotEndWith("World!");
         $this->assertEquals(ESBoolean::class, get_class($actual));
         $this->assertFalse($actual->unfold());
-    }
 
-    public function ESString()
-    {
         $base = "Hello, World!";
         $actual = Shoop::string($base)->doesNotStartWith("World!");
         $this->assertEquals(ESBoolean::class, get_class($actual));
         $this->assertTrue($actual->unfold());
-    }
 
-    public function ESString()
-    {
         $base = "Hello, World!";
         $actual = Shoop::string($base)->endsWith("World!");
         $this->assertEquals(ESBoolean::class, get_class($actual));
@@ -489,18 +419,12 @@ class StringTest extends TestCase
                 return false;
         });
         $this->assertSame($base, $actual->unfold());
-    }
 
-    public function ESString()
-    {
         $expected = "Hello, World!";
         $actual = Shoop::string("Hello")->end(", World!");
         $this->assertEquals(ESString::class, get_class($actual));
         $this->assertEquals($expected, $actual);
-    }
 
-    public function ESString()
-    {
         $expected = "H";
         $actual = Shoop::string("Hello, World!")->first();
         $this->assertEquals(ESString::class, get_class($actual));
@@ -509,10 +433,7 @@ class StringTest extends TestCase
         $expected = "Hello";
         $actual = Shoop::string("Hello, World!")->first(5);
         $this->assertEquals($expected, $actual->unfold());
-    }
 
-    public function ESString()
-    {
         $expected = "!";
         $actual = Shoop::string("Hello, World!")->last();
         $this->assertEquals(ESString::class, get_class($actual));
@@ -522,6 +443,7 @@ class StringTest extends TestCase
         $actual = Shoop::string("Hello, World!")->last(6);
         $this->assertEquals($expected, $actual);
     }
+
 
     public function ESStringStart()
     {

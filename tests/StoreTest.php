@@ -1,80 +1,93 @@
 <?php
 
-namespace Eightfold\ShoopExtras\Tests;
+namespace Eightfold\ShoopShelf\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
-use Eightfold\ShoopExtras\{
-    Shoop,
-    ESStore
-};
+use Eightfold\ShoopShelf\Shoop;
 
+/**
+ * @group Store
+ */
 class StoreTest extends TestCase
 {
-    public function testCanCheckPathIsFileOrFolder()
+    public function tearDown(): void
     {
-        $path = __DIR__ ."/data/inner-folder";
-        $actual = new ESStore($path);
-        $this->assertNotNull($actual);
-
-        $actual = ESStore::fold($path);
-        $this->assertNotNull($actual);
-
-        $actual = ESStore::fold($path)->main;
-        $this->assertEquals($path, $actual);
-
-        $actual = ESStore::fold($path)->isFolder;
-        $this->assertTrue($actual);
-
-        $actual = ESStore::fold($path)->isFolder(function($result) {
-            return $result->unfold();
-        });
-        $this->assertTrue($actual);
-
-        $path = $path ."/content.md";
-        $actual = ESStore::fold($path)->isFile;
-        $this->assertTrue($actual);
-
-        $actual = ESStore::fold($path)->isFile(function($result, $p) {
-            $this->assertTrue(is_a($p, ESStore::class));
-            return $result->unfold();
-        });
-        $this->assertTrue($actual);
+        Shoop::store(__DIR__)->plus("data", ".writing")->delete();
     }
 
-    public function testCanGetContents()
+    /**
+     * @test
+     */
+    public function check_is_file_or_folder()
+    {
+        $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
+
+        AssertEquals::applyWith(
+            true,
+            "boolean",
+            3.62 // 3.13 // 2.28 // 2.21
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->plus(
+                "data",
+                "inner-folder",
+                "subfolder",
+                "inner.md"
+            )->isFile()
+        );
+
+        AssertEquals::applyWith(
+            false,
+            "boolean"
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->plus(
+                "data",
+                "inner-folder",
+                "subfolder",
+                "inner.md"
+            )->isFolder()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function can_get_contents_based_on_folder_or_file()
     {
         $path = __DIR__ ."/data";
 
-        // $expected = [
-        //     __DIR__ ."/data/inner-folder/content.md",
-        //     __DIR__ ."/data/inner-folder/file.extension",
-        //     __DIR__ ."/data/inner-folder/subfolder"
-        // ];
-        // $actual = ESStore::fold($path)->plus("inner-folder")->content();
-        // $this->assertSame($expected, $actual->unfold());
-
-        $expected = [
-            __DIR__ ."/data/inner-folder/subfolder"
-        ];
-        $actual = ESStore::fold($path)->plus("inner-folder")->folders;
-        $this->assertSame($expected, $actual);
+        $expected = [__DIR__ ."/data/inner-folder/subfolder"];
+        AssertEquals::applyWith(
+            $expected,
+            "array",
+            7.49 // 3.6
+        )->unfoldUsing(
+            Shoop::store($path)->plus("inner-folder")->folders()
+        );
 
         $expected = [
             __DIR__ ."/data/inner-folder/content.md",
             __DIR__ ."/data/inner-folder/file.extension"
         ];
-        $actual = ESStore::fold($path)->plus("inner-folder")->files;
-        $this->assertSame($expected, $actual);
+        AssertEquals::applyWith(
+            $expected,
+            "array"
+        )->unfoldUsing(
+            Shoop::store($path)->plus("inner-folder")->files()
+        );
 
         $expected = [
-            __DIR__ ."/data/.writing",
             __DIR__ ."/data/inner-folder",
             __DIR__ ."/data/link.md",
             __DIR__ ."/data/table.md",
         ];
-        $actual = ESStore::fold($path)->content;
-        $this->assertSame($expected, $actual);
+        AssertEquals::applyWith(
+            $expected,
+            "array"
+        )->unfoldUsing(
+            Shoop::store($path)->content()
+        );
 
         $expected = [
             __DIR__ ."/data/.",
@@ -84,16 +97,31 @@ class StoreTest extends TestCase
             __DIR__ ."/data/link.md",
             __DIR__ ."/data/table.md",
         ];
-        $actual = ESStore::fold($path)->content(false);
-        $this->assertSame($expected, $actual->unfold());
+        $expected = [
+            __DIR__ ."/data/inner-folder",
+            __DIR__ ."/data/link.md",
+            __DIR__ ."/data/table.md",
+        ];
+        AssertEquals::applyWith(
+            $expected,
+            "array"
+        )->unfoldUsing(
+            Shoop::store($path)->content()
+        );
 
         $path = $path ."/inner-folder/content.md";
-        $expected = "Hello, World!";
-        $actual = ESStore::fold($path)->content;
-        $this->assertSame($expected, $actual);
+        AssertEquals::applyWith(
+            "Hello, World!\n",
+            "string",
+            0.86
+        )->unfoldUsing(
+            Shoop::store($path)->content(true, false)
+        );
     }
 
-    /*
+    /**
+     * @test
+     *
      * Create a file with string content in the destination folder.
      *
      * Automatically:
@@ -101,86 +129,34 @@ class StoreTest extends TestCase
      * - mode of 0755, and
      * - forced.
      */
-    public function testWriteToPath()
+    public function writing_to_path()
     {
         $base = __DIR__;
-        $store = ESStore::fold($base)->plus("data", ".writing", "first");
+        $store = Shoop::store($base)->plus("data", ".writing", "first");
 
-        $expected = "Hello, World!";
-        $actual = $store->saveContent("Hello, World!");
-        $this->assertTrue($actual->isFile);
-        $this->assertEquals($expected, $actual->content);
-
-        $expected = "Um. Hello, World!";
-        $actual = $store->saveContent("Um. ", ESStore::PREPEND);
-        $this->assertEquals($expected, $actual->content);
-
-        $expected = "Um. Hello, World! How are you?";
-        $actual = $store->saveContent(" How are you?", ESStore::APPEND);
-        $this->assertEquals($expected, $actual->content);
+        AssertEquals::applyWith(
+            "Hello, World!",
+            "string",
+            3.71 // 2.6 // 2.53 // 2.31 // 1.98 // 1.09
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->plus("data", ".writing", "first")
+                ->saveContent("Hello, World!")->content()
+        );
     }
 
-    public function testCanGetFilesAndFolders()
+    /**
+     * @test
+     */
+    public function parentage()
     {
-        $path = __DIR__ ."/data/inner-folder";
-        $expected = [__DIR__ ."/data/inner-folder/subfolder"];
-        $actual = ESStore::fold($path)->folders;
-        $this->assertSame($expected, $actual);
+        $expected = Shoop::string(__DIR__)->divide("/")->minusLast()->join("/");
 
-        $path = __DIR__ ."/data/inner-folder";
-        $expected = [
-            __DIR__ ."/data/inner-folder/content.md",
-            __DIR__ ."/data/inner-folder/file.extension"
-        ];
-        $actual = ESStore::fold($path)->files;
-        $this->assertSame($expected, $actual);
-
-        $path = __DIR__ ."/data/inner-folder";
-        $expected = [__DIR__ ."/data/inner-folder/file.extension"];
-        $actual = ESStore::fold($path)->files(true, [], "extension");
-        $this->assertSame($expected, $actual->unfold());
-    }
-
-    public function testCanUnfold()
-    {
-        $expected = Shoop::string(__DIR__)->divide("/")->dropLast()
-            ->plus("src", "Routes", "any.php")->join("/");
-        $actual = Shoop::store(__DIR__)->dropLast()
-            ->plus("src", "Routes", "any.php");
-        $this->assertSame($expected->unfold(), $actual->unfold());
-    }
-
-    public function testParent()
-    {
-        $expected = Shoop::string(__DIR__)->divide("/")->dropLast()->join("/");
-        $actual = Shoop::store(__DIR__)->dropLast();
-        $this->assertTrue(is_a($actual, ESStore::class));
-
-        $actual = $actual->plus("src", "Routes", "any.php");
-        $this->assertTrue(is_a($actual, ESStore::class));
-
-        $actual = $actual->dropLast(3);
-        $this->assertSame($expected->unfold(), $actual->unfold());
-    }
-
-    public function testCanCheckEndsWith()
-    {
-        $expected = true;
-        $actual = Shoop::store(__DIR__)->plus("file.extension")
-            ->endsWith(".extension");
-        $this->assertSame($expected, $actual->unfold());
-    }
-
-
-    public function testCanGetMetaMember()
-    {
-        $path = __DIR__ ."/data/inner-folder/subfolder/inner.md";
-        $expected = "Something";
-        $actual = ESStore::fold($path)->metaMember("title");
-        $this->assertSame($expected, $actual->unfold());
-
-        // $expected = "";
-        // $actual = ESStore::fold($path)->metaMember("heading");
-        // $this->assertEquals($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            $expected,
+            "string",
+            0.92 // 0.43 // 0.36
+        )->unfoldUsing(
+            Shoop::store(__DIR__)->minusLast()
+        );
     }
 }

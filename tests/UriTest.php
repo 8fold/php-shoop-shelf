@@ -1,39 +1,44 @@
 <?php
 
-namespace Eightfold\ShoopExtras\Tests;
+namespace Eightfold\ShoopShelf\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
-use Eightfold\ShoopExtras\{
-    Shoop,
-    ESPath,
-    ESUri
-};
+use Eightfold\ShoopShelf\Shoop;
 
+use Eightfold\ShoopShelf\FluentTypes\ESPath;
+use Eightfold\ShoopShelf\FluentTypes\ESScheme;
+
+/**
+ * @group Uri
+ */
 class UriTest extends TestCase
 {
+    /**
+     * @test
+     */
     public function testParts()
     {
         $uri = "mailto:admin@8fold.link";
 
-        $actual = ESUri::fold($uri);
+        AssertEquals::applyWith(
+            "mailto",
+            "string",
+            3.52 // 3.37 // 3.3 // 3.24 // 2.64
+        )->unfoldUsing(
+            Shoop::uri($uri)->scheme()
+        );
 
-        $expected = $uri;
-        $a = $actual;
-        $this->assertSame($expected, $a->unfold());
+        AssertEquals::applyWith(
+            "admin@8fold.link",
+            "string",
+            1.34 // 1.1
+        )->unfoldUsing(
+            Shoop::uri($uri)->path()
+        );
 
-        // TODO: Make more shoop-like
-        $expected = "mailto";
-        $this->assertSame($expected, $actual->scheme()->unfold());
-
-        $expected = "admin@8fold.link";
-        $a = $actual->path(false);
-        $this->assertSame($expected, $a->unfold());
-
-        // TODO: Make more shoop-like
-        $expected = "admin@8fold.link";
-        $this->assertSame($expected, $actual->path()->unfold());
-
-        $this->assertTrue(is_a($actual->path(), ESPath::class));
+        $this->assertTrue(is_a(Shoop::uri($uri)->scheme(), ESScheme::class));
+        $this->assertTrue(is_a(Shoop::uri($uri)->path(), ESPath::class));
     }
 }
