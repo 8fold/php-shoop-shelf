@@ -6,47 +6,59 @@ use PHPUnit\Framework\TestCase;
 use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
 use Eightfold\ShoopShelf\Shoop;
-use Eightfold\ShoopShelf\ESUrl;
 
+/**
+ * @group Url
+ */
 class UrlTest extends TestCase
 {
-    public function testParts()
+    /**
+     * @test
+     */
+    public function url_parts()
     {
         $url = "https://admin:password@8fold.link:8888/some/path/to?post=12#fragment";
 
-        $actual = ESUrl::fold($url);
+        $actual = Shoop::url($url);
 
-        $expected = $url;
-        $a = $actual->main();
-        $this->assertSame($expected, $a);
+        AssertEquals::applyWith(
+            "https",
+            "string",
+            3.33 // 3.24 // 3.16 // 2.62 // 2.5
+        )->unfoldUsing(
+            Shoop::url($url)->scheme()
+        );
 
-        $expected = "https";
-        $this->assertSame($expected, $actual->scheme()->unfold());
+        AssertEquals::applyWith(
+            "/some/path/to",
+            "string"
+        )->unfoldUsing(
+            Shoop::url($url)->path(false)
+        );
 
-        // TODO: Prefix with a forward slash - BC
-        $expected = "/some/path/to";
-        $a = $actual->path(false);
-        $this->assertSame($expected, $a->unfold());
+        AssertEquals::applyWith(
+            "admin",
+            "string"
+        )->unfoldUsing(
+            Shoop::url($url)->userInfo()
+        );
 
-        $expected = "admin:password@8fold.link:8888/some/path/to?post=12#fragment";
-        $this->assertSame($expected, $actual->path()->unfold());
+        // $expected = "admin";
+        // $this->assertSame($expected, $actual->user()->unfold());
 
-        $expected = "admin";
-        $this->assertSame($expected, $actual->user()->unfold());
+        // $expected = "password";
+        // $this->assertSame($expected, $actual->password()->unfold());
 
-        $expected = "password";
-        $this->assertSame($expected, $actual->password()->unfold());
+        // $expected = "8fold.link";
+        // $this->assertSame($expected, $actual->host()->unfold());
 
-        $expected = "8fold.link";
-        $this->assertSame($expected, $actual->host()->unfold());
+        // $expected = "8888";
+        // $this->assertSame($expected, $actual->port()->unfold());
 
-        $expected = "8888";
-        $this->assertSame($expected, $actual->port()->unfold());
+        // $expected = ["post" => "12"];
+        // $this->assertSame($expected, $actual->query()->unfold());
 
-        $expected = ["post" => "12"];
-        $this->assertSame($expected, $actual->query()->unfold());
-
-        $expected = "fragment";
-        $this->assertSame($expected, $actual->fragment()->unfold());
+        // $expected = "fragment";
+        // $this->assertSame($expected, $actual->fragment()->unfold());
     }
 }

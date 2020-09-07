@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace Eightfold\ShoopShelf\FluentTypes;
 
+use Eightfold\Shoop\Shoop;
+
+// use Eightfold\Shoop\FilterContracts\Interfaces\Associable;
+
 // use Eightfold\Shoop\{
 //     Helpers\Type,
 //     Interfaces\Shooped,
@@ -20,35 +24,37 @@ namespace Eightfold\ShoopShelf\FluentTypes;
 /**
  * https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#/media/File:URI_syntax_diagram.svg
  *
- * {scheme} - : -˅---------------------------------------------------------------------^ {path} -˅---------------^-˅------------------^ -->
- *               ˅- // -˅ -----------------------------------^- {host} -˅--------------^         ˅- ? - {query} -^ ˅- # - {fragment} -^
- *                      ˅- {userinfo} -˅ ---------------^ @ -^          ˅- : - {port} -^
- *                                     ˅- : {password} -^
+ * ESScheme -˅- ESUrlAuthority ----------------------------------------------------^ ESUrlPath - ? - ESUrlQuery - # ESUrlFragment -->
+ *           ˅- ESUrlUserInfo - : - ESUrlPassword - @ - ESUrlHost - : - ESUrlPort -^
  */
 class ESUrl extends ESUri
 {
-    static public function processedMain($main)
+    private $queryDivider = "?";
+    private $fragmentDivider = "#";
+
+    public function __construct($uri)
     {
-        return Type::sanitizeType($main, ESString::class)->unfold();
+        $this->uri           = $uri;
+        $this->schemeDivider = "://";
     }
 
-    static public function processedArgs(...$args): array
+    public function path(): ESPath
     {
-        $temp = [];
+        $withoutScheme = parent::path()->unfold();
+        $parts         = Shoop::this($withoutScheme)
+            ->asArray($this->pathDelimiter, false, 2);
+        if ($parts->asInteger()->is(2)->unfold()) {
+            die(var_dump(
+                $parts
+            ));
+        }
 
-        $temp[] = (isset($args[0]))
-            ? Type::sanitizeType($args[0], ESString::class)->unfold()
-            : "://";
-
-        $temp[] = (isset($args[1]))
-            ? Type::sanitizeType($args[1], ESString::class)->unfold()
-            : "/";
-
-        return $temp;
-    }
-
-    public function path(bool $withExtras = true): ESPath
-    {
+        if ($withExtras) {
+            return parent::path();
+        }
+        die(var_dump(
+            parent::path()
+        ));
         return ($withExtras)
             ? parent::path()
             : parent::path()->string()->divide($this->pathDelimiter(), false, 2)
@@ -62,90 +68,116 @@ class ESUrl extends ESUri
                 });
     }
 
-    private function userAndPassword(): ESString
+    public function userInfo()
     {
-        return $this->path()->string()->divide("@", false, 2)
-            ->countIsGreaterThan(2, function($result, $split) {
-                return ($result->unfold())
-                    ? Shoop::string("")
-                    : $split->first();
-            });
+        $path = $this->authority()->asArray("@", false, 2);
+        die(var_dump($path));
     }
 
-    public function user(): ESString
-    {
-        return $this->userAndPassword()->divide(":", false, 2)
-            ->countIsGreaterThan(2, function($result, $split) {
-                return ($result->unfold())
-                    ? Shoop::string("")
-                    : $split->first();
-            });
-    }
+    // private function userAndPassword(): ESString
+    // {
+    //     return $this->path()->string()->divide("@", false, 2)
+    //         ->countIsGreaterThan(2, function($result, $split) {
+    //             return ($result->unfold())
+    //                 ? Shoop::string("")
+    //                 : $split->first();
+    //         });
+    // }
 
-    public function password(): ESString
-    {
-        return $this->userAndPassword()->divide(":", false, 2)
-            ->countIsGreaterThan(2, function($result, $split) {
-                return ($result->unfold())
-                    ? Shoop::string("")
-                    : $split->last();
-            });
-    }
+    // public function user(): ESString
+    // {
+    //     return $this->userAndPassword()->divide(":", false, 2)
+    //         ->countIsGreaterThan(2, function($result, $split) {
+    //             return ($result->unfold())
+    //                 ? Shoop::string("")
+    //                 : $split->first();
+    //         });
+    // }
 
-    public function hostAndPort(): ESString
-    {
-        return $this->path()->string()->divide("@", false, 2)
-            ->countIsLessThan(2, function($result, $split) {
-                return ($result->unfold())
-                    ? Shoop::string("")
-                    : $split->last()->divide($this->pathDelimiter, false, 2)
-                        ->countIsLessThan(2, function($result, $split) {
-                            return ($result->unfold())
-                                ? Shoop::string("")
-                                : $split->first();
-                        });
-            });
-    }
+    // public function password(): ESString
+    // {
+    //     return $this->userAndPassword()->divide(":", false, 2)
+    //         ->countIsGreaterThan(2, function($result, $split) {
+    //             return ($result->unfold())
+    //                 ? Shoop::string("")
+    //                 : $split->last();
+    //         });
+    // }
 
-    public function host(): ESString
-    {
-        return $this->hostAndPort()->divide(":", false, 2)->first();
-    }
+    // public function hostAndPort(): ESString
+    // {
+    //     return $this->path()->string()->divide("@", false, 2)
+    //         ->countIsLessThan(2, function($result, $split) {
+    //             return ($result->unfold())
+    //                 ? Shoop::string("")
+    //                 : $split->last()->divide($this->pathDelimiter, false, 2)
+    //                     ->countIsLessThan(2, function($result, $split) {
+    //                         return ($result->unfold())
+    //                             ? Shoop::string("")
+    //                             : $split->first();
+    //                     });
+    //         });
+    // }
 
-    public function port()
-    {
-        return $this->hostAndPort()->divide(":", false, 2)
-            ->countIsLessThan(2, function($result, $split) {
-                return ($result->unfold()) ? Shoop::string("") : $split->last();
-            });
-    }
+    // public function host(): ESString
+    // {
+    //     return $this->hostAndPort()->divide(":", false, 2)->first();
+    // }
 
-    public function query(): ESDictionary
-    {
-        return $this->path()->string()->divide("?", false, 2)
-            ->countIsLessThan(2, function($result, $split) {
-                if ($result->unfold()) { return Shoop::dictionary([]); }
+    // public function port()
+    // {
+    //     return $this->hostAndPort()->divide(":", false, 2)
+    //         ->countIsLessThan(2, function($result, $split) {
+    //             return ($result->unfold()) ? Shoop::string("") : $split->last();
+    //         });
+    // }
 
-                // TODO: Make this part of ESArray - alternating value-member pairs, convert to ESDictionary
-                //      Should this be the raional default of converting an ESArray to an ESDictionary
-                $members = [];
-                $values  = [];
-                $split->last()->divide("#", false, 2)->first()->divide("&", false)
-                    ->each(function($pair) use (&$members, &$values) {
-                        list($member, $value) = Shoop::string($pair)->divide("=");
-                        $members[] = $member;
-                        $values[]  = $value;
-                    });
-                $combined = array_combine($members, $values);
-                return Shoop::dictionary($combined);
-            });
-    }
+    // public function query(): ESDictionary
+    // {
+    //     return $this->path()->string()->divide("?", false, 2)
+    //         ->countIsLessThan(2, function($result, $split) {
+    //             if ($result->unfold()) { return Shoop::dictionary([]); }
 
-    public function fragment()
-    {
-        return $this->path()->string()->divide("#", false, 2)->countIsLessThan(2, function($result, $split) {
-            if ($result->unfold()) { return Shoop::string(""); }
-            return $split->last();
-        });
-    }
+    //             // TODO: Make this part of ESArray - alternating value-member pairs, convert to ESDictionary
+    //             //      Should this be the raional default of converting an ESArray to an ESDictionary
+    //             $members = [];
+    //             $values  = [];
+    //             $split->last()->divide("#", false, 2)->first()->divide("&", false)
+    //                 ->each(function($pair) use (&$members, &$values) {
+    //                     list($member, $value) = Shoop::string($pair)->divide("=");
+    //                     $members[] = $member;
+    //                     $values[]  = $value;
+    //                 });
+    //             $combined = array_combine($members, $values);
+    //             return Shoop::dictionary($combined);
+    //         });
+    // }
+
+    // public function fragment()
+    // {
+    //     return $this->path()->string()->divide("#", false, 2)->countIsLessThan(2, function($result, $split) {
+    //         if ($result->unfold()) { return Shoop::string(""); }
+    //         return $split->last();
+    //     });
+    // }
+
+// - Associable
+    // public function asDictionary(): Associable
+    // {
+    //     $dictionary = parent::asDictionary();
+
+
+    //     $divider = $this->schemeDivider()->unfold();
+    //     $array   = $this->main()->asArray($divider, false, 2);
+    //     if ($array->asInteger()->is(2)->unfold()) {
+    //         $scheme = $array->first()->unfold();
+    //         $path   = $array->last()->unfold();
+    //         $dictionary = [
+    //             "scheme" => Shoop::scheme($scheme),
+    //             "path"   => Shoop::path($path),
+    //         ];
+    //         return Shoop::dictionary($dictionary);
+    //     }
+    //     return Shoop::dictionary([]);
+    // }
 }

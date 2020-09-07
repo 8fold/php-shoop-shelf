@@ -9,4 +9,9 @@ use Eightfold\Foldable\FoldableImp;
 class ESBoolean implements Foldable
 {
     use FoldableImp;
+
+    public function efToBoolean(): bool
+    {
+        return $this->main;
+    }
 }

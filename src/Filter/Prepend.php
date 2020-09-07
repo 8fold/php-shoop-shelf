@@ -6,9 +6,11 @@ namespace Eightfold\ShoopShelf\Filter;
 use Eightfold\Foldable\Filter;
 use Eightfold\Foldable\Foldable;
 
+use Eightfold\ShoopShelf\Apply;
+
 class Prepend extends Filter
 {
-    public function __invoke($using): bool
+    public function __invoke($using)
     {
         if (is_a($using, Foldable::class)) {
             $using = $using->unfold();
@@ -18,6 +20,6 @@ class Prepend extends Filter
             $this->main = $this->main->unfold();
         }
 
-        return $using . $this->main;
+        return Apply::append($using)->unfoldUsing($this->main);
     }
 }

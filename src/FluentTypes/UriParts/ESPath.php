@@ -36,4 +36,14 @@ class ESPath implements Foldable
 
         return static::fold($path);
     }
+
+// - Potential interface usage
+    public function asArray(
+        $start = 0, // int|string
+        bool $includeEmpties = true,
+        int $limit = PHP_INT_MAX
+    )
+    {
+        # code...
+    }
 }

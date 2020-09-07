@@ -7,6 +7,7 @@ use Eightfold\Foldable\Foldable;
 use Eightfold\Foldable\FoldableImp;
 
 use Eightfold\ShoopShelf\Shoop;
+use Eightfold\ShoopShelf\Apply;
 
 use Eightfold\Shoop\FilterContracts\Interfaces\Associable;
 use Eightfold\Shoop\FilterContracts\Interfaces\Falsifiable;
@@ -16,22 +17,27 @@ use Eightfold\Shoop\FilterContracts\Interfaces\Subtractable;
 /**
  * https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#/media/File:URI_syntax_diagram.svg
  *
- * {scheme} - : -˅---------------------------------------------------^ {path} -˅---------- ----^ -˅ -----------------^ -->
- *               ˅- // -˅ -----------------^- {host} -˅--------------^         ˅- ? - {query} -^  ˅- # - {fragment} -^
- *                      ˅- {userinfo} - @ -^          ˅- : - {port} -^
+ * Required
+ * scheme - : - path
+ *
+ * {Optional}
+ * scheme - : - // {authority} - path - ? {query} - # {fragment}
+ *
  */
-class ESUri implements Foldable, Associable
+class ESUri implements Foldable
 {
     use FoldableImp;
 
-    private $uri           = "";
-    private $schemeDivider = ":";
-    private $pathDelimiter = "/";
+    protected $uri               = "";
+    protected $schemeDivider     = ":";
+    protected $authorityDivider  = "//";
+    protected $pathDelimiter     = "/";
+    protected $queryDelimiter    = "?";
+    protected $fragmentPrefix    = "#";
 
-    public function __construct($uri, $schemeDivider = ":", $pathDelimiter = "/")
+    public function __construct($uri, $pathDelimiter = "/")
     {
         $this->uri           = $uri;
-        $this->schemeDivider = $schemeDivider;
         $this->pathDelimiter = $pathDelimiter;
     }
 
@@ -57,135 +63,129 @@ class ESUri implements Foldable, Associable
         return Shoop::string($this->schemeDivider);
     }
 
-    protected function pathDelimiter(): ESString
+    private function authorityDivider(): ESString
+    {
+        return Shoop::string($this->authorityDivider);
+    }
+
+    private function hasAuthority(): ESBoolean
+    {
+        $divider = $this->authorityDivider()->unfold();
+        $bool    = $this->main()->asArray($divider, true, 2)
+            ->asInteger()->is(2)->efToBoolean();
+        return Shoop::boolean($bool);
+    }
+
+    private function pathDelimiter(): ESString
     {
         return Shoop::string($this->pathDelimiter);
     }
 
-    public function scheme(): ESScheme
+    private function queryDelimiter(): ESString
     {
-        $scheme = $this->asDictionary()->at("scheme")->unfold();
-        return Shoop::scheme($scheme);
+        return Shoop::string($this->queryDelimiter);
     }
 
-    public function path(bool $withExtras = true): ESPath
+    private function fragmentPrefix(): ESString
     {
-        $path = $this->asDictionary()->at("path")->unfold();
-        return Shoop::path($path);
+        return Shoop::string($this->fragmentPrefix);
     }
 
-    public function string()
+    public function scheme(): ESString
     {
-        return Shoop::string($this->main());
+        $scheme = Apply::uriScheme()->unfoldUsing($this->main());
+        return Shoop::string($scheme);
     }
 
-// - Maths
-    public function plus($value, $at = ""): Addable
+    public function authority(): ESString
     {
-
+        $authority = Apply::uriAuthority()->unfoldUsing($this->main());
+        return Shoop::string($authority);
     }
 
-    public function minus(
-        $items = [" ", "\t", "\n", "\r", "\0", "\x0B"],
-        bool $fromStart = true,
-        bool $fromEnd   = true
-    ): Subtractable
+    public function username(): ESString
     {
+        $string = $this->authority()->unfold();
 
-    }
-
-// - Associable
-    public function asDictionary(): Associable
-    {
-        $divider = $this->schemeDivider()->unfold();
-        $array   = $this->main()->asArray($divider, false, 2);
-        if ($array->asInteger()->is(2)->unfold()) {
-            $scheme = $array->first()->unfold();
-            $path   = $array->last()->unfold();
-            $dictionary = [
-                "scheme" => Shoop::scheme($scheme),
-                "path"   => Shoop::path($path)
-            ];
-            return Shoop::dictionary($dictionary);
+        $array  = Shoop::this($string)->asArray("@", false, 2);
+        if ($array->asInteger()->is(2)->efToBoolean()) {
+            $array = Shoop::this($array[0])->asArray(":", false, 2);
+            if ($array->asInteger()->is(2)->efToBoolean()) {
+                return Shoop::string($array[0]);
+            }
         }
-        return Shoop::dictionary([]);
+        return Shoop::string("");
     }
 
-    public function efToDictionary(): array
+    public function password(): ESString
     {
-        return $this->asDictionary()->unfold();
+        $string = $this->authority()->unfold();
+
+        $array  = Shoop::this($string)->asArray("@", false, 2);
+        if ($array->asInteger()->is(2)->efToBoolean()) {
+            $array = Shoop::this($array[0])->asArray(":", false, 2);
+            if ($array->asInteger()->is(2)->efToBoolean()) {
+                return Shoop::string($array[1]);
+            }
+        }
+        return Shoop::string("");
     }
 
-    public function has($member): Falsifiable
+    public function host(): ESString
     {
+        $string = $this->authority()->unfold();
 
+        $array  = Shoop::this($string)->asArray("@", false, 2);
+        if ($array->asInteger()->is(2)->efToBoolean()) {
+            $array = Shoop::this($array[1])->asArray(":", false, 2);
+            if ($array->asInteger()->is(2)->efToBoolean()) {
+                return Shoop::string($array[0]);
+            }
+        }
+        return Shoop::string("");
     }
 
-    public function hasAt($member): Falsifiable
+    public function port(): ESString
     {
+        $string = $this->authority()->unfold();
 
+        $array  = Shoop::this($string)->asArray("@", false, 2);
+        if ($array->asInteger()->is(2)->efToBoolean()) {
+            $array = Shoop::this($array[1])->asArray(":", false, 2);
+            if ($array->asInteger()->is(2)->efToBoolean()) {
+                return Shoop::string($array[1]);
+            }
+        }
+        return Shoop::string("");
     }
 
-    public function offsetExists($offset): bool
+    public function path(): ESString
     {
-        return $this->hasAt()->unfold();
+        $path = Apply::uriPath()->unfoldUsing($this->main());
+        return Shoop::string($path);
     }
 
-    public function at($member)
+    public function queryString(): ESString
     {
-
+        $queryString = Apply::uriQuery(true)->unfoldUsing($this->main());
+        return Shoop::string($queryString);
     }
 
-    public function offsetGet($offset)
+    public function query(): ESDictionary
     {
-        return $this->at($offset)->unfold();
+        $queryString = Apply::uriQuery(false, false)->unfoldUsing($this->main());
+        return Shoop::dictionary($queryString);
     }
 
-    public function plusAt(
-        $value,
-        $member = PHP_INT_MAX,
-        bool $overwrite = false
-    ): Associable
+    public function fragmentString(): ESString
     {
-
+        $fragment = Apply::uriFragment(true)->unfoldUsing($this->main());
+        return Shoop::string($fragment);
     }
 
-    public function offsetSet($offset, $value): void
+    public function fragment(): ESString
     {
-
-    }
-
-    public function minusAt($member)
-    {
-    }
-
-    public function offsetUnset($offset): void
-    {
-
-    }
-
-    public function rewind(): void
-    {
-
-    }
-
-    public function valid(): bool
-    {
-
-    }
-
-    public function current()
-    {
-
-    }
-
-    public function key()
-    {
-
-    }
-
-    public function next(): void
-    {
-
+        $fragment = Apply::uriFragment()->unfoldUsing($this->main());
+        return Shoop::string($fragment);
     }
 }

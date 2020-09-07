@@ -27,11 +27,6 @@ class Shoop extends EFShoop
         return ESStore::fold($path);
     }
 
-    static public function path($path): ESPath
-    {
-        return ESPath::fold($path);
-    }
-
     static public function uri($uri): ESUri
     {
         return ESUri::fold($uri);

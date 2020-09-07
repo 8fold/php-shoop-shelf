@@ -8,14 +8,14 @@ use Eightfold\Foldable\Foldable;
 
 class Append extends Filter
 {
-    public function __invoke($using): bool
+    public function __invoke($using)
     {
         if (is_a($using, Foldable::class)) {
             $using = $using->unfold();
         }
 
         if (is_a($this->main, Foldable::class)) {
-            $this->main = $this->main->unfold();
+            $this->main = $this->main()->unfold();
         }
 
         return $this->main . $using;
