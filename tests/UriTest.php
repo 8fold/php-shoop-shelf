@@ -25,7 +25,8 @@ class UriTest extends TestCase
         AssertEquals::applyWith(
             "mailto",
             "string",
-            3.55 // 3.28 // 3.16 // 2.45 // 2.39
+            3.55, // 3.28 // 3.16 // 2.45 // 2.39
+            62
         )->unfoldUsing(
             Shoop::uri($uri)->scheme()
         );
@@ -33,7 +34,8 @@ class UriTest extends TestCase
         AssertEquals::applyWith(
             "admin@8fold.link",
             "string",
-            3.18
+            3.8, // 3.18
+            46
         )->unfoldUsing(
             Shoop::uri($uri)->path()
         );
@@ -64,14 +66,16 @@ class UriTest extends TestCase
 
         AssertEquals::applyWith(
             "admin:password@8fold.link:8888",
-            "string"
+            "string",
+            0.69
         )->unfoldUsing(
             Shoop::uri($url)->authority()
         );
 
         AssertEquals::applyWith(
             "admin",
-            "string"
+            "string",
+            0.37
         )->unfoldUsing(
             Shoop::uri($url)->username()
         );

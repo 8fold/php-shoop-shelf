@@ -28,7 +28,8 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             $path,
             "string",
-            4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
+            4.85, // 4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
+            260
         )->unfoldUsing(
             Shoop::store(__DIR__)->plus(
                 "data",
@@ -41,7 +42,8 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
-            1.08 // 0.33
+            1.08, // 0.33
+            13
         )->unfoldUsing(
             Shoop::store(__DIR__)->plus(
                 "data",
@@ -96,7 +98,8 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             "Something",
             "string",
-            6.19 // 5.99 // 5.64 // 4.48 // 4.4
+            10.24, // 6.19 // 5.99 // 5.64 // 4.48 // 4.4
+            353 // 304
         )->unfoldUsing(
             Shoop::store(__DIR__)->plus(
                 "data",
@@ -109,7 +112,8 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             '<i>Markdown content</i>',
             "string",
-            35.48 // 11.92
+            35.48, // 11.92
+            768
         )->unfoldUsing(
             Shoop::markdown("Markdown content")->html([
                 "text" => "content"
@@ -130,7 +134,8 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>',
             "string",
-            21.9
+            31.48, // 21.9
+            928
         )->unfoldUsing(
             Shoop::store($path)->markdown()
                 ->extensions(TableExtension::class)->html()
@@ -141,7 +146,8 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>',
             "string",
-            9.07 // 5.41
+            9.07, // 5.41
+            179 // 115
         )->unfoldUsing(
             Shoop::store($path)->markdown()
                 ->extensions(ExternalLinkExtension::class)

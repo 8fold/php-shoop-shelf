@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3fca9013e11c9361c8bbba1fb6c2bf0d",
+    "content-hash": "d8d02df24a8b4b9ec19857f9d2fd7cdc",
     "packages": [
         {
             "name": "8fold/php-foldable",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-foldable.git",
-                "reference": "d7b638db742b32d72fcec61cec6c9659f158d5aa"
+                "reference": "e2ee41e8055cea99f3d2590586e34ef31193ae50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-foldable/zipball/d7b638db742b32d72fcec61cec6c9659f158d5aa",
-                "reference": "d7b638db742b32d72fcec61cec6c9659f158d5aa",
+                "url": "https://api.github.com/repos/8fold/php-foldable/zipball/e2ee41e8055cea99f3d2590586e34ef31193ae50",
+                "reference": "e2ee41e8055cea99f3d2590586e34ef31193ae50",
                 "shasum": ""
             },
             "require": {
@@ -53,24 +53,24 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-05T17:06:43+00:00"
+            "time": "2020-09-08T14:39:33+00:00"
         },
         {
             "name": "8fold/php-shoop",
-            "version": "0.8.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-shoop.git",
-                "reference": "ecce51d8a92fccd9f029d82553cef8f78dd00e54"
+                "reference": "581cbc27ec752488f02b7544a7bd400c25c4b5ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/ecce51d8a92fccd9f029d82553cef8f78dd00e54",
-                "reference": "ecce51d8a92fccd9f029d82553cef8f78dd00e54",
+                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/581cbc27ec752488f02b7544a7bd400c25c4b5ef",
+                "reference": "581cbc27ec752488f02b7544a7bd400c25c4b5ef",
                 "shasum": ""
             },
             "require": {
-                "8fold/php-foldable": "~1.0",
+                "8fold/php-foldable": "~1.3",
                 "nikic/iter": "^2.0",
                 "php": "~7"
             },
@@ -104,7 +104,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-08T02:01:50+00:00"
+            "time": "2020-09-08T16:02:55+00:00"
         },
         {
             "name": "league/commonmark",
@@ -303,16 +303,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v2.1.3",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "5e20b83385a77593259c9f8beb2c43cd03b2ac14"
+                "reference": "5fa56b4074d1ae755beb55617ddafe6f5d78f665"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/5e20b83385a77593259c9f8beb2c43cd03b2ac14",
-                "reference": "5e20b83385a77593259c9f8beb2c43cd03b2ac14",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/5fa56b4074d1ae755beb55617ddafe6f5d78f665",
+                "reference": "5fa56b4074d1ae755beb55617ddafe6f5d78f665",
                 "shasum": ""
             },
             "require": {
@@ -321,7 +321,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1-dev"
+                    "dev-master": "2.2-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -363,7 +363,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-06-06T08:49:21+00:00"
+            "time": "2020-09-07T11:33:47+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -2403,7 +2403,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "8fold/php-shoop": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
