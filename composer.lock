@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cadfc951d6aa3022a36b782f64c409f",
+    "content-hash": "3fca9013e11c9361c8bbba1fb6c2bf0d",
     "packages": [
         {
             "name": "8fold/php-foldable",
@@ -57,16 +57,16 @@
         },
         {
             "name": "8fold/php-shoop",
-            "version": "0.7.1",
+            "version": "0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-shoop.git",
-                "reference": "690d3adb065b261ec4c6ad35a2c198701f985b84"
+                "reference": "ecce51d8a92fccd9f029d82553cef8f78dd00e54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/690d3adb065b261ec4c6ad35a2c198701f985b84",
-                "reference": "690d3adb065b261ec4c6ad35a2c198701f985b84",
+                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/ecce51d8a92fccd9f029d82553cef8f78dd00e54",
+                "reference": "ecce51d8a92fccd9f029d82553cef8f78dd00e54",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +104,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-04T22:09:13+00:00"
+            "time": "2020-09-08T02:01:50+00:00"
         },
         {
             "name": "league/commonmark",
@@ -1010,16 +1010,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.1.7",
+            "version": "9.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "2ef92bec3186a827faf7362ff92ae4e8ec2e49d2"
+                "reference": "f98f8466126d83b55b924a94d2244c53c216b8fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2ef92bec3186a827faf7362ff92ae4e8ec2e49d2",
-                "reference": "2ef92bec3186a827faf7362ff92ae4e8ec2e49d2",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f98f8466126d83b55b924a94d2244c53c216b8fb",
+                "reference": "f98f8466126d83b55b924a94d2244c53c216b8fb",
                 "shasum": ""
             },
             "require": {
@@ -1079,7 +1079,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-03T07:09:19+00:00"
+            "time": "2020-09-07T08:07:10+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

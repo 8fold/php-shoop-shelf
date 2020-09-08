@@ -41,7 +41,7 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
-            0.33
+            1.08 // 0.33
         )->unfoldUsing(
             Shoop::store(__DIR__)->plus(
                 "data",
@@ -141,7 +141,7 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>',
             "string",
-            5.41
+            9.07 // 5.41
         )->unfoldUsing(
             Shoop::store($path)->markdown()
                 ->extensions(ExternalLinkExtension::class)

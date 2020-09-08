@@ -50,10 +50,8 @@ class ESMarkdown implements Foldable
         $trim = true
     ): ESString
     {
-        $replaced = $this->body()
+        return $this->body()
             ->replace($markdownReplacements, $caseSensitive);
-
-        return ($trim) ? $replaced->trim() : $replaced;
     }
 
     public function html(
@@ -67,16 +65,17 @@ class ESMarkdown implements Foldable
         ]
     )
     {
+        $content = $this->content($markdownReplacements, $caseSensitive)->unfold();
+
         $environment = Environment::createCommonMarkEnvironment();
         $args        = $this->args();
         foreach ($args as $extension) {
             $environment->addExtension(new $extension());
         }
 
-        $content = $this->content($markdownReplacements, $caseSensitive)->unfold();
-
         $html = (new CommonMarkConverter($config, $environment))
             ->convertToHtml($content);
+
         $html = Shoop::string($html)
             ->replace($htmlReplacements, $caseSensitive);
 

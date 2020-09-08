@@ -27,7 +27,7 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            3.62 // 3.13 // 2.28 // 2.21
+            4.62 // 3.62 // 3.13 // 2.28 // 2.21
         )->unfoldUsing(
             Shoop::store(__DIR__)->plus(
                 "data",
@@ -113,7 +113,7 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             "Hello, World!\n",
             "string",
-            0.86
+            1.55 // 0.86
         )->unfoldUsing(
             Shoop::store($path)->content(true, false)
         );

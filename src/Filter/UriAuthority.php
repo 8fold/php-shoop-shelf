@@ -48,7 +48,7 @@ class UriAuthority extends Filter
 
         $array = Shoop::this($using)->asArray($this->authorityDivider, false, 2);
         if ($array->asInteger()->is(2)->efToBoolean()) {
-            $array = $array->at(1)->asArray($this->pathDelimiter, false, 2);
+            $array = $array->at(1)->asArray($this->pathDelimiter, true, 2);
             if ($array->asInteger()->is(2)->efToBoolean()) {
                 if ($this->includeDivider) {
                     return $this->authorityDivider . $array->at(0)->unfold();

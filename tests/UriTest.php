@@ -25,7 +25,7 @@ class UriTest extends TestCase
         AssertEquals::applyWith(
             "mailto",
             "string",
-            3.28 // 3.16 // 2.45 // 2.39
+            3.55 // 3.28 // 3.16 // 2.45 // 2.39
         )->unfoldUsing(
             Shoop::uri($uri)->scheme()
         );
@@ -41,7 +41,7 @@ class UriTest extends TestCase
         AssertEquals::applyWith(
             "/",
             "string",
-            3.55
+            4.44 // 4.39 // 3.55
         )->unfoldUsing(
             Shoop::uri("https://authority/")->path()
         );
@@ -49,7 +49,6 @@ class UriTest extends TestCase
 
     /**
      * @test
-     * @group current
      */
     public function query_and_fragment()
     {

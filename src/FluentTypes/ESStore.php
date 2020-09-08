@@ -3,27 +3,40 @@ declare(strict_types=1);
 
 namespace Eightfold\ShoopShelf\FluentTypes;
 
+use Eightfold\Foldable\Foldable;
+use Eightfold\Foldable\FoldableImp;
+
 use Eightfold\ShoopShelf\Apply;
 
 use Eightfold\ShoopShelf\Shoop;
 
-class ESStore extends ESPath
+class ESStore implements Foldable
 {
-    // public function metaMember($memberName)
-    // {
-    //     $value = $this->markdown()->meta()->{$memberName};
-    //     if ($value === null) {
-    //         return Shoop::string("");
-    //     }
-    //     return Shoop::this($value);
-    // }
+    use FoldableImp;
 
-    // public function endsWith($needle, Closure $closure = null)
-    // {
-    //     $needle = Type::sanitizeType($needle, ESString::class);
-    //     $bool = Shoop::string($this->main())->endsWith($needle);
-    //     return $this->condition($bool, $closure);
-    // }
+    public function main(): ESString
+    {
+        return Shoop::string($this->main);
+    }
+
+    private function delimiter(): ESString
+    {
+        return (isset($this->args[0]))
+            ? Shoop::string($this->args[0])
+            : Shoop::string("/");
+    }
+
+    public function plus(...$parts): ESStore
+    {
+        $delimiter = $this->delimiter()->unfold();
+        $path = Shoop::pipe($this->main()->unfold(),
+            Apply::typeAsArray($delimiter),
+            Apply::plus($parts),
+            Apply::typeAsString($delimiter)
+        )->unfold();
+
+        return static::fold($path);
+    }
 
     public function minusLast($length = 1)
     {
