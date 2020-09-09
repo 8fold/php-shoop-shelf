@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8d02df24a8b4b9ec19857f9d2fd7cdc",
+    "content-hash": "a65b62ef80fb53cb0055c976695d0e2f",
     "packages": [
         {
             "name": "8fold/php-foldable",
@@ -57,16 +57,16 @@
         },
         {
             "name": "8fold/php-shoop",
-            "version": "dev-master",
+            "version": "0.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-shoop.git",
-                "reference": "581cbc27ec752488f02b7544a7bd400c25c4b5ef"
+                "reference": "67cc4013260437b79a8769c000957fe47be6256b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/581cbc27ec752488f02b7544a7bd400c25c4b5ef",
-                "reference": "581cbc27ec752488f02b7544a7bd400c25c4b5ef",
+                "url": "https://api.github.com/repos/8fold/php-shoop/zipball/67cc4013260437b79a8769c000957fe47be6256b",
+                "reference": "67cc4013260437b79a8769c000957fe47be6256b",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +104,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-08T16:02:55+00:00"
+            "time": "2020-09-09T19:34:32+00:00"
         },
         {
             "name": "league/commonmark",
@@ -2403,9 +2403,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "8fold/php-shoop": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

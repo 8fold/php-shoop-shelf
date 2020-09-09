@@ -28,8 +28,8 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             $path,
             "string",
-            4.85, // 4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
-            260
+            5.23, // 4.85, // 4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
+            290 // 260
         )->unfoldUsing(
             Shoop::store(__DIR__)->plus(
                 "data",
@@ -113,7 +113,7 @@ class MarkdownTest extends TestCase
             '<i>Markdown content</i>',
             "string",
             35.48, // 11.92
-            768
+            784 // 768
         )->unfoldUsing(
             Shoop::markdown("Markdown content")->html([
                 "text" => "content"

@@ -41,13 +41,6 @@ class ESString extends Shooped
         return $this->asArray($start, $includeEmpties, $limit);
     }
 
-    public function prepend($content): ESString
-    {
-        $main = $this->main();
-        $string = Apply::prepend($content)->unfoldUsing($main);
-        return Shoop::string($stirng);
-    }
-
     public function markdown(): ESMarkdown
     {
         $content = $this->main();

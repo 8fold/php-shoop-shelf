@@ -40,7 +40,7 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.6
+            0.63 // 0.6
         )->unfoldUsing(
             Shoop::store(__DIR__)->plus(
                 "data",
