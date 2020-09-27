@@ -7,7 +7,7 @@ use Eightfold\Foldable\Foldable;
 use Eightfold\Shoop\FilterContracts\Comparable as PipeComparable;
 use Eightfold\Shoop\FilterContracts\Falsifiable;
 
-interface Comparable extends PipeComparable
+interface _Comparable extends PipeComparable
 {
     public function isNot($compare): Falsifiable;
 

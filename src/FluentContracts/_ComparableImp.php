@@ -11,7 +11,7 @@ use Eightfold\Shoop\FilterContracts\Falsifiable;
 /**
  * TODO: Make extension of Shooped
  */
-trait ComparableImp
+trait _ComparableImp
 {
     use PipeComparableImp;
 

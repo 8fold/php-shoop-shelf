@@ -19,7 +19,7 @@ use Eightfold\Shoop\FluentTypes\ESTuple;
 use Eightfold\Shoop\FluentTypes\ESJson;
 use Eightfold\Shoop\FluentTypes\ESDictionary;
 
-trait ReversibleImp
+trait _ReversibleImp
 {
     public function reverse(): Shooped
     {

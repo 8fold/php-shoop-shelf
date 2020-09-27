@@ -15,7 +15,7 @@ use Eightfold\Shoop\FilterContracts\Stringable;
 use Eightfold\Shoop\FilterContracts\Tupleable;
 use Eightfold\Shoop\FilterContracts\Typeable;
 
-interface Shooped extends
+interface _Shooped extends
     Foldable,
     Arrayable,
     Comparable,

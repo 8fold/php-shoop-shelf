@@ -8,7 +8,7 @@ use Eightfold\Shoop\FilterContracts\SubtractableImp as PipeSubtractibleImp;
 
 use Eightfold\Shoop\Filter\From;
 
-trait SubtractableImp
+trait _SubtractableImp
 {
     use PipeSubtractibleImp;
 

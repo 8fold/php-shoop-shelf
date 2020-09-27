@@ -14,7 +14,7 @@ use Eightfold\Shoop\FluentTypes\ESBoolean;
 use Eightfold\Shoop\FluentTypes\ESInteger;
 use Eightfold\Shoop\FluentTypes\ESString;
 
-trait ArrayableImp
+trait _ArrayableImp
 {
     use PipeArrayableImp;
 

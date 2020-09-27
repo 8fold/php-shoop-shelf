@@ -29,7 +29,7 @@ use Eightfold\Shoop\FluentTypes\Contracts\ReversibleImp;
 use Eightfold\Shoop\FluentTypes\Contracts\SubtractableImp;
 use Eightfold\Shoop\FluentTypes\Contracts\ArrayableImp;
 
-trait ShoopedImp
+trait _ShoopedImp
 {
     use FoldableImp, FalsifiableImp, SubtractableImp, ReversibleImp,
         TupleableImp, StringableImp, ArrayableImp, KeyableImp, CountableImp,

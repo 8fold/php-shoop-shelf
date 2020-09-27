@@ -6,7 +6,7 @@ use Eightfold\Foldable\Foldable;
 
 use Eightfold\Shoop\FilterContracts\Addable as FilterAddable;
 
-interface Addable extends FilterAddable
+interface _Addable extends FilterAddable
 {
     public function prepend($value): Foldable;
 

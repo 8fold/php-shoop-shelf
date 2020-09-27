@@ -9,7 +9,7 @@ use Eightfold\Shoop\Apply;
 
 use Eightfold\Shoop\FilterContracts\AddableImp as PipeAddableImp;
 
-trait AddableImp
+trait _AddableImp
 {
     use PipeAddableImp;
 

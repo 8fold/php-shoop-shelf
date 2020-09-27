@@ -2,7 +2,7 @@
 
 namespace Eightfold\Shoop\Filter\Contracts;
 
-interface Divisible extends PipeSubtractable
+interface _Divisible extends PipeSubtractable
 {
     public function divide(
         $start = 0,

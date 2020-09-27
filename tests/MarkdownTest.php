@@ -135,7 +135,7 @@ class MarkdownTest extends TestCase
             '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>',
             "string",
             31.48, // 21.9
-            928
+            1141 // 928
         )->unfoldUsing(
             Shoop::store($path)->markdown()
                 ->extensions(TableExtension::class)->html()

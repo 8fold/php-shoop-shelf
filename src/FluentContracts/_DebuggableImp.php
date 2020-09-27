@@ -2,7 +2,7 @@
 
 namespace Eightfold\Shoop\FluentTypes\Contracts;
 
-interface DebuggableImp
+interface _DebuggableImp
 {
     public function __debugInfo(): array
     {

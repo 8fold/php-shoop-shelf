@@ -18,7 +18,7 @@ use Eightfold\Shoop\FluentTypes\ESTuple;
 use Eightfold\Shoop\FluentTypes\ESJson;
 use Eightfold\Shoop\FluentTypes\ESDictionary;
 
-trait MultiplicativeImp
+trait _MultiplicativeImp
 {
     public function multiply($multiplier = 1): Foldable
     {
