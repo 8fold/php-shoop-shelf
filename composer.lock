@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8d02df24a8b4b9ec19857f9d2fd7cdc",
+    "content-hash": "05d7031f223c17a66577f71a32d51f36",
     "packages": [
         {
             "name": "8fold/php-foldable",
@@ -57,7 +57,7 @@
         },
         {
             "name": "8fold/php-shoop",
-            "version": "dev-master",
+            "version": "0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/php-shoop.git",
@@ -2403,9 +2403,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "8fold/php-shoop": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
