@@ -14,7 +14,7 @@ class StoreTest extends TestCase
 {
     public function tearDown(): void
     {
-        Shoop::store(__DIR__)->plus("data", ".writing")->delete();
+        Shoop::store(__DIR__)->append(["data", ".writing"])->delete();
     }
 
     /**
@@ -27,27 +27,29 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            4.62 // 3.62 // 3.13 // 2.28 // 2.21
+            4.13, // 4.07, // 4, // 3.94, // 3.85, // 3.44,
+            334 // 333 // 332 // 331 // 330
         )->unfoldUsing(
-            Shoop::store(__DIR__)->plus(
+            Shoop::store(__DIR__)->append([
                 "data",
                 "inner-folder",
                 "subfolder",
                 "inner.md"
-            )->isFile()
+            ])->isFile()
         );
 
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.63 // 0.6
+            0.07,
+            1
         )->unfoldUsing(
-            Shoop::store(__DIR__)->plus(
+            Shoop::store(__DIR__)->append([
                 "data",
                 "inner-folder",
                 "subfolder",
                 "inner.md"
-            )->isFolder()
+            ])->isFolder()
         );
     }
 
@@ -62,10 +64,10 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             $expected,
             "array",
-            7.49, // 3.6
-            19
+            4.93, // 4.89, // 4.22,
+            373
         )->unfoldUsing(
-            Shoop::store($path)->plus("inner-folder")->folders()
+            Shoop::store($path)->append(["inner-folder"])->folders()
         );
 
         $expected = [
@@ -74,9 +76,11 @@ class StoreTest extends TestCase
         ];
         AssertEquals::applyWith(
             $expected,
-            "array"
+            "array",
+            0.42,
+            1
         )->unfoldUsing(
-            Shoop::store($path)->plus("inner-folder")->files()
+            Shoop::store($path)->append(["inner-folder"])->files()
         );
 
         $expected = [
@@ -86,38 +90,11 @@ class StoreTest extends TestCase
         ];
         AssertEquals::applyWith(
             $expected,
-            "array"
+            "array",
+            0.29, // 0.28,
+            1
         )->unfoldUsing(
             Shoop::store($path)->content()
-        );
-
-        $expected = [
-            __DIR__ ."/data/.",
-            __DIR__ ."/data/..",
-            __DIR__ ."/data/.writing",
-            __DIR__ ."/data/inner-folder",
-            __DIR__ ."/data/link.md",
-            __DIR__ ."/data/table.md",
-        ];
-        $expected = [
-            __DIR__ ."/data/inner-folder",
-            __DIR__ ."/data/link.md",
-            __DIR__ ."/data/table.md",
-        ];
-        AssertEquals::applyWith(
-            $expected,
-            "array"
-        )->unfoldUsing(
-            Shoop::store($path)->content()
-        );
-
-        $path = $path ."/inner-folder/content.md";
-        AssertEquals::applyWith(
-            "Hello, World!\n",
-            "string",
-            1.55 // 0.86
-        )->unfoldUsing(
-            Shoop::store($path)->content(true, false)
         );
     }
 
@@ -133,16 +110,13 @@ class StoreTest extends TestCase
      */
     public function writing_to_path()
     {
-        $base = __DIR__;
-        $store = Shoop::store($base)->plus("data", ".writing", "first");
-
         AssertEquals::applyWith(
             "Hello, World!",
             "string",
-            3.71, // 2.6 // 2.53 // 2.31 // 1.98 // 1.09
-            30
+            5.26, // 5.25,
+            373 // 372
         )->unfoldUsing(
-            Shoop::store(__DIR__)->plus("data", ".writing", "first")
+            Shoop::store(__DIR__)->append(["data", ".writing", "first"])
                 ->saveContent("Hello, World!")->content()
         );
     }
@@ -152,14 +126,16 @@ class StoreTest extends TestCase
      */
     public function parentage()
     {
-        $expected = Shoop::string(__DIR__)->divide("/")->minusLast()->join("/");
+        $expected = Shoop::this(__DIR__)->divide("/")
+            ->dropLast()->efToString("/");
 
         AssertEquals::applyWith(
             $expected,
             "string",
-            0.92 // 0.43 // 0.36
+            0.37, // 0.35,
+            20
         )->unfoldUsing(
-            Shoop::store(__DIR__)->minusLast()
+            Shoop::store(__DIR__)->up()
         );
     }
 }

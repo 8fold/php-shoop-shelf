@@ -11,6 +11,8 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
 
+use Eightfold\Shoop\Shooped;
+
 use Eightfold\ShoopShelf\Shoop;
 
 class ESMarkdown implements Foldable
@@ -33,10 +35,11 @@ class ESMarkdown implements Foldable
         return YamlFrontMatter::parse($this->main());
     }
 
-    public function body(): ESString
+    public function body(): Shooped
     {
-        $body = $this->parsed()->body();
-        return Shoop::string($body);
+        return Shoop::this(
+            $this->parsed()->body()
+        );
     }
 
     public function meta()
@@ -48,10 +51,21 @@ class ESMarkdown implements Foldable
         $markdownReplacements = [],
         $caseSensitive = true,
         $trim = true
-    ): ESString
+    ): Shooped
     {
-        return $this->body()
-            ->replace($markdownReplacements, $caseSensitive);
+        return $this->replace(
+            $this->body()->unfold(),
+            $markdownReplacements,
+            $caseSensitive
+        );
+        // $main         = $this->body()->unfold();
+        // $needles      = array_keys($markdownReplacements);
+        // $replacements = array_values($markdownReplacements);
+        // $string       = str_replace($needles, $replacements, $main);
+
+        // return Shoop::this($string);
+        // return $this->body()
+        //     ->replace($markdownReplacements, $caseSensitive);
     }
 
     public function html(
@@ -76,17 +90,29 @@ class ESMarkdown implements Foldable
         $html = (new CommonMarkConverter($config, $environment))
             ->convertToHtml($content);
 
-        $html = Shoop::string($html)
-            ->replace($htmlReplacements, $caseSensitive);
+        $html = $this->replace($html, $htmlReplacements, $caseSensitive)->unfold();
 
         if ($minified) {
-            $html = $html->replace([
-                "\t" => "",
-                "\n" => "",
-                "\r" => "",
-                "\r\n" => ""
-            ]);
+            $html = $this->replace(
+                $html,
+                [
+                    "\t" => "",
+                    "\n" => "",
+                    "\r" => "",
+                    "\r\n" => ""
+                ]
+            )->unfold();
         }
-        return Shoop::string($html);
+        return Shoop::this($html);
+    }
+
+    private function replace($using, $replacements = [], $caseSensitive = true)
+    {
+        $main         = $using;
+        $needles      = array_keys($replacements);
+        $replacements = array_values($replacements);
+        $string       = str_replace($needles, $replacements, $main);
+
+        return Shoop::this($string);
     }
 }

@@ -36,11 +36,15 @@ class UriQuery extends Filter
             $using = $using->unfold();
         }
 
-        $array = Shoop::this($using)->asArray($this->queryDivider, false, 2);
+        $array = Shoop::this($using)->divide($this->queryDivider, false, 2);
 
-        if ($array->asInteger()->is(2)->efToBoolean()) {
+        if ($array->length()->is(2)->efToBoolean()) {
+            $fragment = Apply::uriFragment(true)->unfoldUsing($using);
+            $string   = $array->last()->unfold();
+            $query    = str_replace($fragment, "", $string);
+            die(var_dump($query));
             $queryString = Shoop::this($array[1])->minus([
-                Apply::uriFragment(true)->unfoldUsing($using)
+
                 ], false, false);
 
             if ($this->asString and $this->includeDivider) {

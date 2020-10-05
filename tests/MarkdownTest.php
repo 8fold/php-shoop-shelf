@@ -28,66 +28,46 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             $path,
             "string",
-            5.23, // 4.85, // 4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
-            290 // 260
+            11.65, // 4.36, // 4.33, // 4.22, // 3.66, // 3.51,
+            345 // 344
+            // 5.23, // 4.85, // 4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
+            // 290 // 260
         )->unfoldUsing(
-            Shoop::store(__DIR__)->plus(
+            Shoop::store(__DIR__)->append([
                 "data",
                 "inner-folder",
                 "subfolder",
                 "inner.md"
-            )
+            ])
         );
 
         AssertEquals::applyWith(
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
-            1.08, // 0.33
-            13
+            0.17, // 0.13, // 0.12, // 0.11,
+            1
         )->unfoldUsing(
-            Shoop::store(__DIR__)->plus(
+            Shoop::store(__DIR__)->append([
                 "data",
                 "inner-folder",
                 "subfolder",
                 "inner.md"
-            )->content()
+            ])->content()
         );
 
         AssertEquals::applyWith(
             "---\ntitle: Something\n---\n\nMarkdown text\n",
-            "string"
+            "string",
+            0.24, // 0.22, // 0.21, // 0.2, // 0.19,
+            11 // 10
         )->unfoldUsing(
-            Shoop::store(__DIR__)->plus(
+            Shoop::store(__DIR__)->append([
                 "data",
                 "inner-folder",
                 "subfolder",
                 "inner.md"
-            )->markdown()
+            ])->markdown()
         );
-
-        $actual = Shoop::store(__DIR__)->plus(
-            "data",
-            "inner-folder",
-            "subfolder",
-            "inner.md"
-        )->content();
-        $this->assertTrue(is_a($actual, ESString::class));
-
-        $actual = Shoop::store(__DIR__)->plus(
-            "data",
-            "inner-folder",
-            "subfolder",
-            "inner.md"
-        )->content()->markdown();
-        $this->assertTrue(is_a($actual, ESMarkdown::class));
-
-        $actual = Shoop::store(__DIR__)->plus(
-            "data",
-            "inner-folder",
-            "subfolder",
-            "inner.md"
-        )->markdown();
-        $this->assertTrue(is_a($actual, ESMarkdown::class));
     }
 
     /**
@@ -98,22 +78,22 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             "Something",
             "string",
-            10.24, // 6.19 // 5.99 // 5.64 // 4.48 // 4.4
-            353 // 304
+            8.85,
+            704 // 703
         )->unfoldUsing(
-            Shoop::store(__DIR__)->plus(
+            Shoop::store(__DIR__)->append([
                 "data",
                 "inner-folder",
                 "subfolder",
                 "inner.md"
-            )->markdown()->title()
+            ])->markdown()->title()
         );
 
         AssertEquals::applyWith(
             '<i>Markdown content</i>',
             "string",
-            35.48, // 11.92
-            784 // 768
+            25.67, // 10.02, // 8.44,
+            848 // 768
         )->unfoldUsing(
             Shoop::markdown("Markdown content")->html([
                 "text" => "content"
@@ -134,8 +114,10 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             '<table><thead><tr><th align="left">THead</th></tr></thead><tbody><tr><td align="left">TBody</td></tr></tbody></table>',
             "string",
-            31.48, // 21.9
-            1141 // 928
+            13.25, // 12.88, // 12.17,
+            1138
+            // 31.48, // 21.9
+            // 1141 // 928
         )->unfoldUsing(
             Shoop::store($path)->markdown()
                 ->extensions(TableExtension::class)->html()
@@ -146,8 +128,10 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>',
             "string",
-            9.07, // 5.41
-            179 // 115
+            3.23, // 2.62,
+            179 // 117
+            // 9.07, // 5.41
+            // 179 // 115
         )->unfoldUsing(
             Shoop::store($path)->markdown()
                 ->extensions(ExternalLinkExtension::class)

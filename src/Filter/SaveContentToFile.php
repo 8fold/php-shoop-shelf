@@ -40,8 +40,7 @@ class SaveContentToFile extends Filter
             $using = $using->unfold();
         }
 
-        $folderPath = Shoop::string($using)->divide("/")->minusLast()->join("/")
-            ->unfold();
+        $folderPath = Shoop::this($using)->divide("/")->droplast()->efToString("/");
         if (! Apply::isFile()->unfoldUsing($using) and
             ! Apply::isFolder()->unfoldUsing($folderPath) and
             $this->makeFolder

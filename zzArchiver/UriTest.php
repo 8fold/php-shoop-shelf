@@ -51,7 +51,6 @@ class UriTest extends TestCase
 
     /**
      * @test
-     * @group current
      */
     public function query_and_fragment()
     {

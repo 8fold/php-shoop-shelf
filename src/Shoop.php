@@ -42,23 +42,23 @@ class Shoop extends EFShoop
         return ESUrl::fold($url);
     }
 
-    static public function array($array): ESArray
-    {
-        return ESArray::fold($array);
-    }
+    // static public function array($array): ESArray
+    // {
+    //     return ESArray::fold($array);
+    // }
 
-    static public function dictionary($dictionary): ESDictionary
-    {
-        return ESDictionary::fold($dictionary);
-    }
+    // static public function dictionary($dictionary): ESDictionary
+    // {
+    //     return ESDictionary::fold($dictionary);
+    // }
 
-    static public function string($string): ESString
-    {
-        return ESString::fold($string);
-    }
+    // static public function string($string): ESString
+    // {
+    //     return ESString::fold($string);
+    // }
 
-    static public function boolean($boolean): ESBoolean
-    {
-        return ESBoolean::fold($boolean);
-    }
+    // static public function boolean($boolean): ESBoolean
+    // {
+    //     return ESBoolean::fold($boolean);
+    // }
 }

@@ -28,12 +28,12 @@ class UriScheme extends Filter
             $using = $using->unfold();
         }
 
-        $array = Shoop::this($using)->asArray($this->schemeDivider, false, 2);
+        $array = Shoop::this($using)->divide($this->schemeDivider, false, 2);
 
-        if ($array->asInteger()->is(2)->efToBoolean()) {
+        if ($array->length()->is(2)->efToBoolean()) {
             return ($this->includeDivider)
-                ? $array[0] . $this->schemeDivider
-                : $array[0];
+                ? $array->first()->unfold() . $this->schemeDivider
+                : $array->first()->unfold();
 
         }
         return  "";

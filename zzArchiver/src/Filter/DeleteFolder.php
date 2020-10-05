@@ -19,15 +19,9 @@ class DeleteFolder extends Filter
         $content = Apply::folderContent(true, true)->unfoldUsing($using);
         foreach ($content as $path) {
             if (Apply::isFile()->unfoldUsing($path)) {
-            //   die(var_dump(
-            //     $path
-            // ));
                 Apply::deleteFile()->unfoldUsing($path);
 
             } elseif (Apply::isFolder()->unfoldUsing($path)) {
-            // die(var_dump(
-            //     $path
-            // ));
                 Apply::deleteFolder()->unfoldUsing($path);
 
             }

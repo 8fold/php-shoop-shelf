@@ -3,135 +3,107 @@ declare(strict_types=1);
 
 namespace Eightfold\ShoopShelf\FluentTypes;
 
-use Eightfold\Foldable\Foldable;
-use Eightfold\Foldable\FoldableImp;
+use Eightfold\Foldable\Fold;
 
-use Eightfold\ShoopShelf\Apply;
+use Eightfold\Shoop\Shooped;
 
 use Eightfold\ShoopShelf\Shoop;
+use Eightfold\ShoopShelf\Apply;
 
-class ESStore implements Foldable
+class ESStore extends Fold
 {
-    use FoldableImp;
-
-    public function main(): ESString
+    public function main()
     {
-        return Shoop::string($this->main);
+        return Shoop::this($this->main);
     }
 
-    private function delimiter(): ESString
+    public function append(array $parts): ESStore
     {
-        return (isset($this->args[0]))
-            ? Shoop::string($this->args[0])
-            : Shoop::string("/");
+        return static::fold(
+            $this->parts()->append($parts)->efToString("/")
+        );
     }
 
-    public function plus(...$parts): ESStore
+    public function exists(): Shooped
     {
-        $delimiter = $this->delimiter()->unfold();
-        $path = Shoop::pipe($this->main()->unfold(),
-            Apply::typeAsArray($delimiter),
-            Apply::plus($parts),
-            Apply::typeAsString($delimiter)
-        )->unfold();
-
-        return static::fold($path);
+        $path = $this->main()->unfold();
+        return Shoop::this(
+            file_exists($path)
+        );
     }
 
-    public function minusLast($length = 1)
+    public function isFile(): Shooped
     {
-        $path = $this->main()->divide("/")->minusLast($length)->join("/")->unfold();
-        return static::fold($path);
+        return Shoop::this(
+            is_file($this->main()->unfold())
+        );
     }
 
-    public function isFolder(): ESBoolean
+    public function isFolder(): Shooped
     {
-        $bool = Apply::isFolder()->unfoldUsing($this->main());
-        return Shoop::boolean($bool);
+        return Shoop::this(
+            is_dir($this->main()->unfold())
+        );
     }
 
-    public function isFile(): ESBoolean
+    public function up(int $levels = 1)
     {
-        $bool = Apply::isFile()->unfoldUsing($this->main());
-        return Shoop::boolean($bool);
+        return static::fold(
+            $this->parts()->dropLast($levels)->efToString("/")
+        );
     }
 
-    public function markdown(): ESMarkdown
+    private function parts(): Shooped
+    {
+        return $this->main()->divide("/");
+    }
+
+    public function folders()
+    {
+        return $this->content(false);
+    }
+
+    public function files()
+    {
+        return $this->content(true, false);
+    }
+
+    public function markdown(...$extensions)
     {
         $content = $this->content()->unfold();
-        return ESMarkdown::fold($content);
+        return Shoop::markdown($content, ...$extensions);
     }
 
     public function content(
         bool $includeFiles = true,
         bool $includeFolders = true,
         array $ignore = [".", "..", ".DS_Store"]
-    ) // PHP 8.0 ESString|ESArray
-    {
-        $path = $this->main();
-        if (Apply::isFile()->unfoldUsing($path)) {
-            $content = Apply::fileContent()->unfoldUsing($path);
-            return Shoop::string($content);
-
-        } elseif (Apply::isFolder()->unfoldUsing($path)) {
-            $content = Apply::FolderContent(
-                $includeFiles,
-                $includeFolders,
-                $ignore
-            )->unfoldUsing($path);
-            return Shoop::array($content);
-
-        }
-        return Shoop::string("");
-    }
-
-    public function folders(
-        $ignore = [".", "..", ".DS_Store"]
-    ): ESArray
+    )
     {
         if ($this->isFile()->unfold()) {
-            return Shoop::array([]);
+            return Shoop::this(
+                file_get_contents($this->main()->unfold())
+            );
         }
 
-        // $main = $this->main();
-        $content = $this->content(false, true, $ignore);// Apply::folderContent(false)->unfoldUsing($main);
-
-        return Shoop::array($content);
-    }
-
-    public function files(
-        $ignore = [".", "..", ".DS_Store"],
-        $endsWith = "*"
-    ): ESArray
-    {
-        if ($this->isFile()->unfold()) {
-            return Shoop::array([]);
-        }
-
-        // $main = $this->main();
-        $content = $this->content(true, false, $ignore); // Apply::folderContent(true, false, $ignore)->unfoldUsing($main);
-
-        return Shoop::array($content);
-
-        $content = $this->content(true, $ignore);
-
-        // TODO: Use filters
-        $build = [];
-        foreach ($content as $path) {
-            $store = Shoop::store($path);
-            if ($store->isFile()->unfold()) {
-                if (Apply::is("*")->unfoldUsing($endsWith) or
-                    Apply::endsWith($endsWith)->unfoldUsing($path)
+        $content = scandir($this->main()->unfold());
+        $path    = $this->main()->unfold();
+        return Shoop::this($content)->each(function($v, $m, &$build) use
+            ($path, $includeFiles, $includeFolders, $ignore) {
+                if (Shoop::this($v)->isEmpty()->reversed()->unfold() and
+                    Shoop::this($ignore)->has($v)->reversed()->unfold()
                 ) {
-                    $build[] = $store->unfold();
+                    $path = $path ."/". $v;
+                    if ($includeFiles and static::fold($path)->isFile()->unfold()) {
+                        $build[] = $path;
 
+                    } elseif ($includeFolders and static::fold($path)->isFolder()->unfold()) {
+                        $build[] = $path;
+
+                    }
                 }
             }
-        }
-        $build = array_filter($build);
-        $build = array_values($build);
-
-        return Shoop::array($build);
+        );
     }
 
     public function saveContent(
@@ -147,15 +119,20 @@ class ESStore implements Foldable
 
     public function delete()
     {
-        $main = $this->main()->unfold();
-        if (Apply::isFile()->unfoldUsing($main)) {
-            Apply::deleteFile()->unfoldUsing($main);
-
-        } elseif (Apply::isFolder()->unfoldUsing($main)) {
-            Apply::deleteFolder()->unfoldUsing($main);
-
+        if ($this->exists()->reversed()->efToBoolean()) {
+            return;
         }
 
-        return static::fold($main);
+        $path = $this->main()->unfold();
+        if ($this->isFile()->unfold()) {
+            unlink($path);
+
+        } elseif ($this->isFolder()->unfold()) {
+            $this->content()->each(function($path) {
+                static::fold($path)->delete();
+            });
+            rmdir($this->main()->unfold());
+
+        }
     }
 }
