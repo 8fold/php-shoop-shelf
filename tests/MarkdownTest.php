@@ -44,7 +44,7 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
-            0.17, // 0.13, // 0.12, // 0.11,
+            17.66, // 0.17, // 0.13, // 0.12, // 0.11,
             1
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
