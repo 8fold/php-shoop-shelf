@@ -53,7 +53,7 @@ class ESStore extends Fold
         );
     }
 
-    private function parts(): Shooped
+    public function parts(): Shooped
     {
         return $this->main()->divide("/");
     }
