@@ -5,16 +5,46 @@ namespace Eightfold\ShoopShelf\FluentTypes;
 
 use Eightfold\Foldable\Fold;
 
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\Filesystem;
+use League\Flysystem\StorageAttributes;
+
 use Eightfold\Shoop\Shooped;
 
 use Eightfold\ShoopShelf\Shoop;
-use Eightfold\ShoopShelf\Apply;
 
 class ESStore extends Fold
 {
+    private $path = "";
+
+    public function __construct(string $path)
+    {
+        $this->path = $path;
+    }
+
+    public function path()
+    {
+        return Shoop::this($this->path);
+    }
+
+    /**
+     * @deprecated
+     */
     public function main()
     {
-        return Shoop::this($this->main);
+        return $this->path();
+    }
+
+    public function parts(): Shooped
+    {
+        return $this->main()->divide("/");
+    }
+
+    public function up(int $levels = 1)
+    {
+        return static::fold(
+            $this->parts()->dropLast($levels)->efToString("/")
+        );
     }
 
     public function append(array $parts): ESStore
@@ -35,27 +65,26 @@ class ESStore extends Fold
     public function isFile(): Shooped
     {
         return Shoop::this(
-            is_file($this->main()->unfold())
+            is_file($this->path()->unfold())
         );
     }
 
     public function isFolder(): Shooped
     {
         return Shoop::this(
-            is_dir($this->main()->unfold())
+            is_dir($this->path()->unfold())
         );
     }
 
-    public function up(int $levels = 1)
+    public function markdown(...$extensions)
     {
-        return static::fold(
-            $this->parts()->dropLast($levels)->efToString("/")
-        );
+        $content = $this->content()->unfold();
+        return Shoop::markdown($content, ...$extensions);
     }
 
-    public function parts(): Shooped
+    public function unfold()
     {
-        return $this->main()->divide("/");
+        return $this->main()->unfold();
     }
 
     public function folders()
@@ -68,53 +97,55 @@ class ESStore extends Fold
         return $this->content(true, false);
     }
 
-    public function markdown(...$extensions)
-    {
-        $content = $this->content()->unfold();
-        return Shoop::markdown($content, ...$extensions);
-    }
-
     public function content(
         bool $includeFiles = true,
         bool $includeFolders = true,
-        array $ignore = [".", "..", ".DS_Store"]
+        array $ignore = [".", "..", ".DS_Store"] // no longer used
     )
     {
+        $adapter    = new LocalFilesystemAdapter("/");
+        $fileSystem = new Filesystem($adapter);
         if ($this->isFile()->unfold()) {
+            $content = $fileSystem->read($this->path()->unfold());
             return Shoop::this(
-                file_get_contents($this->main()->unfold())
+                trim($content)
             );
         }
 
-        $content = scandir($this->main()->unfold());
-        $path    = $this->main()->unfold();
-        return Shoop::this($content)->each(function($v, $m, &$build) use
-            ($path, $includeFiles, $includeFolders, $ignore) {
-                if (Shoop::this($v)->isEmpty()->reversed()->unfold() and
-                    Shoop::this($ignore)->has($v)->reversed()->unfold()
-                ) {
-                    $path = $path ."/". $v;
-                    if ($includeFiles and static::fold($path)->isFile()->unfold()) {
-                        $build[] = $path;
+        $content = $fileSystem->listContents($this->path()->unfold());
+        if ($includeFiles and ! $includeFolders) {
+            $content = $content->filter(
+                fn(StorageAttributes $attributes) => $attributes->isFile()
+            );
 
-                    } elseif ($includeFolders and static::fold($path)->isFolder()->unfold()) {
-                        $build[] = $path;
+        } elseif (! $includeFiles and $includeFolders) {
+            $content = $content->filter(
+                fn(StorageAttributes $attributes) => $attributes->isDir()
+            );
+        }
 
-                    }
-                }
-            }
-        );
+        return Shoop::this(
+            $content->map(
+                fn(StorageAttributes $attributes) => "/". $attributes->path()
+            )->toArray()
+        )->asArray();
     }
 
     public function saveContent(
         $content,
-        $makeFolder = true
+        $makeFolder = true // no longer used
     )
     {
-        $main = $this->main()->unfold();
-        Apply::saveContentToFile($content, $main, $makeFolder)
-            ->unfoldUsing($main);
-        return static::fold($main);
+        $adapter    = new LocalFilesystemAdapter("/");
+        $fileSystem = new Filesystem($adapter);
+        $fileSystem->write(
+            $this->path()->unfold(),
+            $content
+        );
+
+        return static::fold(
+            $this->path()->unfold()
+        );
     }
 
     public function delete()
@@ -123,16 +154,22 @@ class ESStore extends Fold
             return;
         }
 
-        $path = $this->main()->unfold();
+        $adapter    = new LocalFilesystemAdapter("/");
+        $fileSystem = new Filesystem($adapter);
         if ($this->isFile()->unfold()) {
-            unlink($path);
+            $fileSystem->delete(
+                $this->path()->unfold()
+            );
 
         } elseif ($this->isFolder()->unfold()) {
-            $this->content()->each(function($path) {
-                static::fold($path)->delete();
-            });
-            rmdir($this->main()->unfold());
+            $fileSystem->deleteDirectory(
+                $this->path()->unfold()
+            );
 
         }
+
+        return static::fold(
+            $this->path()->unfold()
+        );
     }
 }

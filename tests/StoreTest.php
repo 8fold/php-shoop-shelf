@@ -27,8 +27,8 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            4.13, // 4.07, // 4, // 3.94, // 3.85, // 3.44,
-            334 // 333 // 332 // 331 // 330
+            7.28, // 5.89, // 4.13, // 4.07, // 4, // 3.94, // 3.85, // 3.44,
+            346 // 345 // 334 // 333 // 332 // 331 // 330
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
                 "data",
@@ -41,7 +41,7 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.07,
+            0.08, // 0.07,
             1
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
@@ -64,10 +64,19 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             $expected,
             "array",
-            4.93, // 4.89, // 4.22,
-            373
+            8.42, // 7.26, // 6.67, // 5.82, // 4.93, // 4.89, // 4.22,
+            758 // 750 // 381 // 380 // 379 // 373
         )->unfoldUsing(
             Shoop::store($path)->append(["inner-folder"])->folders()
+        );
+
+        AssertEquals::applyWith(
+            "Hello, World!",
+            "string",
+            6.1, // 2.42,
+            715 // 306
+        )->unfoldUsing(
+            Shoop::store($path)->append(["inner-folder", "content.md"])->content()
         );
 
         $expected = [
@@ -77,22 +86,22 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             $expected,
             "array",
-            0.42,
-            1
+            7.09, // 6.39, // 0.42,
+            758
         )->unfoldUsing(
             Shoop::store($path)->append(["inner-folder"])->files()
         );
 
         $expected = [
             __DIR__ ."/data/inner-folder",
-            __DIR__ ."/data/link.md",
             __DIR__ ."/data/table.md",
+            __DIR__ ."/data/link.md",
         ];
         AssertEquals::applyWith(
             $expected,
             "array",
-            0.29, // 0.28,
-            1
+            6.82, // 6.73, // 0.38, // 0.29, // 0.28,
+            756
         )->unfoldUsing(
             Shoop::store($path)->content()
         );
@@ -113,8 +122,8 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             "Hello, World!",
             "string",
-            5.26, // 5.25,
-            373 // 372
+            9.79, // 7.4, // 7.13, // 6.87, // 6.65, // 5.26, // 5.25,
+            716 // 373 // 372
         )->unfoldUsing(
             Shoop::store(__DIR__)->append(["data", ".writing", "first"])
                 ->saveContent("Hello, World!")->content()
@@ -133,7 +142,7 @@ class StoreTest extends TestCase
             $expected,
             "string",
             0.37, // 0.35,
-            20
+            22 // 20
         )->unfoldUsing(
             Shoop::store(__DIR__)->up()
         );
