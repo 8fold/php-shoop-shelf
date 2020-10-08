@@ -44,7 +44,9 @@ class ESMarkdown implements Foldable
 
     public function meta()
     {
-        return (object) $this->parsed()->matter();
+        return Shoop::this(
+            (object) $this->parsed()->matter()
+        );
     }
 
     public function content(
@@ -58,14 +60,6 @@ class ESMarkdown implements Foldable
             $markdownReplacements,
             $caseSensitive
         );
-        // $main         = $this->body()->unfold();
-        // $needles      = array_keys($markdownReplacements);
-        // $replacements = array_values($markdownReplacements);
-        // $string       = str_replace($needles, $replacements, $main);
-
-        // return Shoop::this($string);
-        // return $this->body()
-        //     ->replace($markdownReplacements, $caseSensitive);
     }
 
     public function html(
