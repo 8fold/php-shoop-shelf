@@ -5,9 +5,13 @@ namespace Eightfold\ShoopShelf\FluentTypes;
 
 use Eightfold\Foldable\Fold;
 
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;
-use League\Flysystem\StorageAttributes;
+use League\Flysystem\Adapter\Local;
+
+// Flysystem 2.0
+// use League\Flysystem\Local\LocalFilesystemAdapter;
+// use League\Flysystem\Filesystem;
+// use League\Flysystem\StorageAttributes;
 
 use Eightfold\Shoop\Shooped;
 
@@ -103,32 +107,52 @@ class ESStore extends Fold
         array $ignore = [".", "..", ".DS_Store"] // no longer used
     )
     {
-        $adapter    = new LocalFilesystemAdapter("/");
+        $adapter    = new Local("/");
         $fileSystem = new Filesystem($adapter);
+        // $adapter    = new LocalFilesystemAdapter("/");
+        // $fileSystem = new Filesystem($adapter);
         if ($this->isFile()->unfold()) {
             $content = $fileSystem->read($this->path()->unfold());
             return Shoop::this(
-                trim($content)
+                $content
             );
         }
 
         $content = $fileSystem->listContents($this->path()->unfold());
+        $content = Shoop::this($content);
         if ($includeFiles and ! $includeFolders) {
-            $content = $content->filter(
-                fn(StorageAttributes $attributes) => $attributes->isFile()
-            );
+            $content = $content->retain(function($v) {
+                $path = "/". $v["path"];
+                $store = Shoop::store($path);
+                return $store->isFile()->unfold();
+            });
+
+            // Flysystem 2.0
+            // $content = $content->filter(
+            //     fn(StorageAttributes $attributes) => $attributes->isFile()
+            // );
 
         } elseif (! $includeFiles and $includeFolders) {
-            $content = $content->filter(
-                fn(StorageAttributes $attributes) => $attributes->isDir()
-            );
+            $content = $content->retain(function($v) {
+                $path = "/". $v["path"];
+                $store = Shoop::store($path);
+                return $store->isFolder()->unfold();
+            });
+
+            // Flysystem 2.0
+            // $content = $content->filter(
+            //     fn(StorageAttributes $attributes) => $attributes->isDir()
+            // );
         }
 
-        return Shoop::this(
-            $content->map(
-                fn(StorageAttributes $attributes) => "/". $attributes->path()
-            )->toArray()
-        )->asArray();
+        return $content->each(fn($v) => "/". $v["path"]);
+
+        // Flysystem 2.0
+        // return Shoop::this(
+        //     $content->map(
+        //         fn(StorageAttributes $attributes) => "/". $attributes->path()
+        //     )->toArray()
+        // )->asArray();
     }
 
     public function saveContent(
@@ -136,8 +160,10 @@ class ESStore extends Fold
         $makeFolder = true // no longer used
     )
     {
-        $adapter    = new LocalFilesystemAdapter("/");
+        $adapter    = new Local("/");
         $fileSystem = new Filesystem($adapter);
+        // $adapter    = new LocalFilesystemAdapter("/");
+        // $fileSystem = new Filesystem($adapter);
         $fileSystem->write(
             $this->path()->unfold(),
             $content
@@ -154,17 +180,23 @@ class ESStore extends Fold
             return;
         }
 
-        $adapter    = new LocalFilesystemAdapter("/");
+        $adapter    = new Local("/");
         $fileSystem = new Filesystem($adapter);
+        // $adapter    = new LocalFilesystemAdapter("/");
+        // $fileSystem = new Filesystem($adapter);
         if ($this->isFile()->unfold()) {
             $fileSystem->delete(
                 $this->path()->unfold()
             );
 
         } elseif ($this->isFolder()->unfold()) {
-            $fileSystem->deleteDirectory(
+            $fileSystem->deleteDir(
                 $this->path()->unfold()
             );
+            // FlySystem 2.0
+            // $fileSystem->deleteDirectory(
+            //     $this->path()->unfold()
+            // );
 
         }
 

@@ -71,7 +71,7 @@ class StoreTest extends TestCase
         );
 
         AssertEquals::applyWith(
-            "Hello, World!",
+            "Hello, World!\n",
             "string",
             6.1, // 2.42,
             715 // 306
@@ -94,8 +94,8 @@ class StoreTest extends TestCase
 
         $expected = [
             __DIR__ ."/data/inner-folder",
-            __DIR__ ."/data/table.md",
             __DIR__ ."/data/link.md",
+            __DIR__ ."/data/table.md",
         ];
         AssertEquals::applyWith(
             $expected,

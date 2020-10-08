@@ -29,7 +29,7 @@ class MarkdownTest extends TestCase
             $path,
             "string",
             11.65, // 4.36, // 4.33, // 4.22, // 3.66, // 3.51,
-            345 // 344
+            348 // 346 // 345 // 344
             // 5.23, // 4.85, // 4.58 // 2.91 // 2.76 // 2.64 // 2.63 // 2.06 // 2.05 // 1.99
             // 290 // 260
         )->unfoldUsing(
@@ -45,7 +45,7 @@ class MarkdownTest extends TestCase
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
             17.66, // 0.17, // 0.13, // 0.12, // 0.11,
-            1
+            235
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
                 "data",
@@ -59,7 +59,7 @@ class MarkdownTest extends TestCase
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
             0.38, // 0.24, // 0.22, // 0.21, // 0.2, // 0.19,
-            11 // 10
+            12 // 11 // 10
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
                 "data",
@@ -128,7 +128,7 @@ class MarkdownTest extends TestCase
         AssertEquals::applyWith(
             '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>',
             "string",
-            3.23, // 2.62,
+            4.67, // 3.23, // 2.62,
             179 // 117
             // 9.07, // 5.41
             // 179 // 115

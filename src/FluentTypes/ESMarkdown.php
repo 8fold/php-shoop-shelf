@@ -21,7 +21,7 @@ class ESMarkdown implements Foldable
 
     public function __call(string $name, array $args = [])
     {
-        return $this->meta()->{$name};
+        return $this->meta()->at($name);
     }
 
     public function extensions(...$args): ESMarkdown
