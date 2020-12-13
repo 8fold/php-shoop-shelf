@@ -80,6 +80,13 @@ class ESStore extends Fold
         );
     }
 
+    public function mimeType(): Shooped
+    {
+        return Shoop::this(
+            mime_content_type($this->main()->unfold())
+        );
+    }
+
     public function markdown(...$extensions)
     {
         $content = $this->content()->unfold();
