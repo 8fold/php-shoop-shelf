@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "php": "~7",
+    "php": "~7|^8.0",
     "8fold/php-shoop": "~0.10",
     "spatie/yaml-front-matter": "~2.0",
     "league/commonmark": "~1.5",
