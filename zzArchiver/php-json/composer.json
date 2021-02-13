@@ -1,0 +1,48 @@
+{
+    "name": "8fold/php-json",
+    "description": "Handling JSON.",
+    "version": "0.0.1",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josh Bruce",
+            "email": "josh@8fold.pro"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^0.9.4",
+        "phpunit/phpunit": "7.5.6",
+        "phpunit/php-code-coverage": "^6.0.7"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Eightfold\\Json\\": "src/"
+        }
+    },
+    "extra": {
+        "8fold": {
+            "writer": "Apollonius",
+            "reader": "Jason",
+            "tests": [
+                "Can instantiate",
+                "Can use getKey",
+                "Can use key name function",
+                "Can use fetch with key name",
+                "Can go deep"
+            ]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Eightfold\\Json\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}
