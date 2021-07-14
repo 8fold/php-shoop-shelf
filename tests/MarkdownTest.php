@@ -45,7 +45,7 @@ class MarkdownTest extends TestCase
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
             17.66, // 0.17, // 0.13, // 0.12, // 0.11,
-            309 // 235
+            392 // 309 // 235
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
                 "data",
@@ -59,7 +59,7 @@ class MarkdownTest extends TestCase
             "---\ntitle: Something\n---\n\nMarkdown text\n",
             "string",
             0.38, // 0.24, // 0.22, // 0.21, // 0.2, // 0.19,
-            12 // 11 // 10
+            13 // 12 // 11 // 10
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
                 "data",
@@ -93,7 +93,7 @@ class MarkdownTest extends TestCase
             '<i>Markdown content</i>',
             "string",
             25.67, // 10.02, // 8.44,
-            854 // 848 // 768
+            943 // 854 // 848 // 768
         )->unfoldUsing(
             Shoop::markdown("Markdown content")->html([
                 "text" => "content"
