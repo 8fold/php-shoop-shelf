@@ -60,43 +60,44 @@ class StoreTest extends TestCase
     {
         $path = __DIR__ ."/data";
 
-        $expected = [__DIR__ ."/data/inner-folder/subfolder"];
-        AssertEquals::applyWith(
-            $expected,
-            "array",
-            8.42, // 7.26, // 6.67, // 5.82, // 4.93, // 4.89, // 4.22,
-            758 // 750 // 381 // 380 // 379 // 373
-        )->unfoldUsing(
-            Shoop::store($path)->append(["inner-folder"])->folders()
-        );
+        // $expected = [__DIR__ ."/data/inner-folder/subfolder"];
+        // AssertEquals::applyWith(
+        //     $expected,
+        //     "array",
+        //     8.42, // 7.26, // 6.67, // 5.82, // 4.93, // 4.89, // 4.22,
+        //     758 // 750 // 381 // 380 // 379 // 373
+        // )->unfoldUsing(
+        //     Shoop::store($path)->append(["inner-folder"])->folders()
+        // );
 
-        AssertEquals::applyWith(
-            "Hello, World!\n",
-            "string",
-            6.1, // 2.42,
-            715 // 306
-        )->unfoldUsing(
-            Shoop::store($path)->append(["inner-folder", "content.md"])->content()
-        );
+        // AssertEquals::applyWith(
+        //     "Hello, World!\n",
+        //     "string",
+        //     6.1, // 2.42,
+        //     715 // 306
+        // )->unfoldUsing(
+        //     Shoop::store($path)->append(["inner-folder", "content.md"])->content()
+        // );
 
-        $expected = [
-            __DIR__ ."/data/inner-folder/content.md",
-            __DIR__ ."/data/inner-folder/file.extension"
-        ];
-        AssertEquals::applyWith(
-            $expected,
-            "array",
-            7.09, // 6.39, // 0.42,
-            758
-        )->unfoldUsing(
-            Shoop::store($path)->append(["inner-folder"])->files()
-        );
+        // $expected = [
+        //     __DIR__ ."/data/inner-folder/content.md",
+        //     __DIR__ ."/data/inner-folder/file.extension"
+        // ];
+        // AssertEquals::applyWith(
+        //     $expected,
+        //     "array",
+        //     7.09, // 6.39, // 0.42,
+        //     758
+        // )->unfoldUsing(
+        //     Shoop::store($path)->append(["inner-folder"])->files()
+        // );
 
         $expected = [
             __DIR__ ."/data/inner-folder",
             __DIR__ ."/data/link.md",
             __DIR__ ."/data/table.md",
         ];
+
         AssertEquals::applyWith(
             $expected,
             "array",

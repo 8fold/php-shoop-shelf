@@ -14,7 +14,7 @@
     "8fold/php-shoop": "~0.10",
     "spatie/yaml-front-matter": "~2.0",
     "league/commonmark": "~1.5",
-    "league/flysystem": "~1.1.0"
+    "league/flysystem": "~2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~9.1"
