@@ -93,7 +93,7 @@ class MarkdownTest extends TestCase
             '<i>Markdown content</i>',
             "string",
             25.67, // 10.02, // 8.44,
-            943 // 854 // 848 // 768
+            1594 // <- CommonMark 2 943 // 854 // 848 // 768
         )->unfoldUsing(
             Shoop::markdown("Markdown content")->html([
                 "text" => "content"
