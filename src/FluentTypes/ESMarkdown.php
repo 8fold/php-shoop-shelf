@@ -8,8 +8,10 @@ use Eightfold\Foldable\FoldableImp;
 
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 
-use League\CommonMark\CommonMarkConverter;
-use League\CommonMark\Environment;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\MarkdownConverter;
+
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 
 use Eightfold\Shoop\Shooped;
 
@@ -75,14 +77,16 @@ class ESMarkdown implements Foldable
     {
         $content = $this->content($markdownReplacements, $caseSensitive)->unfold();
 
-        $environment = Environment::createCommonMarkEnvironment();
+        $environment = (new Environment($config))
+            // This should probably be optional at some point
+            ->addExtension(new CommonMarkCoreExtension());
         $args        = $this->args();
         foreach ($args as $extension) {
             $environment->addExtension(new $extension());
         }
 
-        $html = (new CommonMarkConverter($config, $environment))
-            ->convertToHtml($content);
+        $html = (new MarkdownConverter($environment))
+            ->convertToHtml($content)->getContent();
 
         $html = $this->replace($html, $htmlReplacements, $caseSensitive)->unfold();
 
