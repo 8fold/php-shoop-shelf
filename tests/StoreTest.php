@@ -41,7 +41,7 @@ class StoreTest extends TestCase
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.21, // 0.08, // 0.07,
+            0.22, // 0.21, // 0.08, // 0.07,
             1
         )->unfoldUsing(
             Shoop::store(__DIR__)->append([
