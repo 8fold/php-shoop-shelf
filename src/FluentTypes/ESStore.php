@@ -5,13 +5,13 @@ namespace Eightfold\ShoopShelf\FluentTypes;
 
 use Eightfold\Foldable\Fold;
 
-// use League\Flysystem\Filesystem;
-// use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Adapter\Local;
 
 // Flysystem 2.0
-use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\Filesystem;
-use League\Flysystem\StorageAttributes;
+// use League\Flysystem\Local\LocalFilesystemAdapter;
+// use League\Flysystem\Filesystem;
+// use League\Flysystem\StorageAttributes;
 
 use Eightfold\Shoop\Shooped;
 
@@ -20,6 +20,10 @@ use Eightfold\ShoopShelf\Shoop;
 class ESStore extends Fold
 {
     private $path = "";
+
+    private $adapter = null;
+
+    private $fileSystem = null;
 
     public function __construct(string $path)
     {
@@ -108,47 +112,115 @@ class ESStore extends Fold
         return $this->content(true, false);
     }
 
+    private function adapter()
+    {
+        if ($this->adapter == null) {
+            if (class_exists(\League\Flysystem\Local\LocalFilesystemAdapter::class)) {
+                $this->adapter = new \League\Flysystem\Local\LocalFilesystemAdapter("/");
+
+            } else {
+                $this->adapter = new Local("/");
+
+            }
+        }
+        return $this->adapter;
+    }
+
+    private function fileSystem()
+    {
+        if ($this->fileSystem == null) {
+            if (class_exists(\League\Flysystem\Local\LocalFilesystemAdapter::class)) {
+                $this->fileSystem = new \League\Flysystem\Filesystem($this->adapter());
+
+            } else {
+                $this->fileSystem = new Filesystem($this->adapter());
+
+            }
+        }
+        return $this->fileSystem;
+    }
+
+    private function contentList()
+    {
+        return $this->fileSystem()->listContents($this->path()->unfold());
+    }
+
+    private function foldersList(): array
+    {
+        if (class_exists(\League\Flysystem\Local\LocalFilesystemAdapter::class)) {
+            $base = $this->contentList()->filter(
+                fn(\League\Flysystem\StorageAttributes $attributes) => $attributes->isDir()
+
+            )->map(
+                fn(\League\Flysystem\StorageAttributes $attributes) => "/". $attributes->path()
+
+            )->sortByPath()->toArray();
+
+            return $base;
+        }
+
+        $content = $this->contentList();
+
+        $folders = Shoop::this($content)->retain(function($v) {
+            $path = "/". $v["path"];
+            $store = Shoop::store($path);
+            return $store->isFolder()->unfold();
+        });
+
+        return ($folders->isEmpty()->efToBoolean())
+            ? []
+            : $folders->each(fn($v) => "/". $v["path"])->efToArray();
+
+    }
+
+    private function filesList(): array
+    {
+        if (class_exists(\League\Flysystem\Local\LocalFilesystemAdapter::class)) {
+            $base = $this->fileSystem()->listContents($this->path()->unfold())->filter(
+                fn(\League\Flysystem\StorageAttributes $attributes) => $attributes->isFile()
+
+            )->sortByPath()->map(
+                fn(\League\Flysystem\StorageAttributes $attributes) => "/". $attributes->path()
+
+            )->toArray();
+
+            return $base;
+        }
+
+        $content = $this->fileSystem()->listContents($this->path()->unfold());
+// "league/flysystem": "^1.1.5"
+        $files = Shoop::this($content)->retain(function($v) {
+            $path = "/". $v["path"];
+            $store = Shoop::store($path);
+            return $store->isFile()->unfold();
+        });
+
+        return ($files->isEmpty()->efToBoolean())
+            ? []
+            : $files->each(fn($v) => "/". $v["path"])->efToArray();
+
+    }
+
     public function content(
         bool $includeFiles = true,
         bool $includeFolders = true,
         array $ignore = [".", "..", ".DS_Store"] // no longer used
     )
     {
-        // $adapter    = new Local("/");
-        // $fileSystem = new Filesystem($adapter);
-        $adapter    = new LocalFilesystemAdapter("/");
-        $fileSystem = new Filesystem($adapter);
-        if ($this->isFile()->unfold()) {
-            $content = $fileSystem->read($this->path()->unfold());
+
+        if ($this->isFile()->efToBoolean()) {
+            $content = $this->fileSystem()->read($this->path()->unfold());
             return Shoop::this($content);
 
         }
 
-        // $content = $fileSystem->listContents($this->path()->unfold());
+        $folders = ($includeFolders)
+            ? $folders = $this->foldersList()
+            : [];
 
-        $folders = [];
-        if ($includeFolders) {
-            $folders = $fileSystem->listContents($this->path()->unfold())->filter(
-                fn(StorageAttributes $attributes) => $attributes->isDir()
-            )->map(
-                fn(StorageAttributes $attributes) => "/". $attributes->path()
-            )->toArray();
-
-            $folders = Shoop::this($folders)->sort(SORT_NATURAL)->efToArray();
-
-        }
-
-        $files   = [];
-        if ($includeFiles) {
-            $files = $fileSystem->listContents($this->path()->unfold())->filter(
-                fn(StorageAttributes $attributes) => $attributes->isFile()
-            )->map(
-                fn(StorageAttributes $attributes) => "/". $attributes->path()
-            )->toArray();
-
-            $files = Shoop::this($files)->sort(SORT_NATURAL)->efToArray();
-
-        }
+        $files = ($includeFiles)
+            ? $this->filesList()
+            : [];
 
         return Shoop::this($folders)->append($files)->asArray();
     }
@@ -158,11 +230,7 @@ class ESStore extends Fold
         $makeFolder = true // no longer used
     )
     {
-        // $adapter    = new Local("/");
-        // $fileSystem = new Filesystem($adapter);
-        $adapter    = new LocalFilesystemAdapter("/");
-        $fileSystem = new Filesystem($adapter);
-        $fileSystem->write(
+        $this->fileSystem()->write(
             $this->path()->unfold(),
             $content
         );
@@ -178,24 +246,23 @@ class ESStore extends Fold
             return;
         }
 
-        // $adapter    = new Local("/");
-        // $fileSystem = new Filesystem($adapter);
-        $adapter    = new LocalFilesystemAdapter("/");
-        $fileSystem = new Filesystem($adapter);
         if ($this->isFile()->unfold()) {
-            $fileSystem->delete(
+            $this->fileSystem()->delete(
                 $this->path()->unfold()
             );
 
         } elseif ($this->isFolder()->unfold()) {
-            // $fileSystem->deleteDir(
-            //     $this->path()->unfold()
-            // );
-            // FlySystem 2.0
-            $fileSystem->deleteDirectory(
-                $this->path()->unfold()
-            );
+            if (class_exists(\League\Flysystem\Local\LocalFilesystemAdapter::class)) {
+                $this->fileSystem()->deleteDirectory(
+                    $this->path()->unfold()
+                );
 
+            } else {
+                $this->fileSystem()->deleteDir(
+                    $this->path()->unfold()
+                );
+
+            }
         }
 
         return static::fold(
