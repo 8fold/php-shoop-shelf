@@ -93,7 +93,7 @@ class MarkdownTest extends TestCase
             '<i>Markdown content</i>',
             "string",
             25.67, // 10.02, // 8.44,
-            943 // 854 // 848 // 768
+            1629 // <- Commonmark 2 943 // 854 // 848 // 768
         )->unfoldUsing(
             Shoop::markdown("Markdown content")->html([
                 "text" => "content"
@@ -129,7 +129,7 @@ class MarkdownTest extends TestCase
             '<p><a rel="noopener noreferrer" target="_blank" href="https://github.com/8fold/php-shoop-extras">Something</a></p><p>Stripped</p>',
             "string",
             6.01, // 4.67, // 3.23, // 2.62,
-            179 // 117
+            188 // <- Commonmark 2 179 // 117
             // 9.07, // 5.41
             // 179 // 115
         )->unfoldUsing(
